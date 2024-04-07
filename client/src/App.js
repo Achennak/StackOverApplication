@@ -1,13 +1,18 @@
-// ************** THIS IS YOUR APP'S ENTRY POINT. CHANGE THIS FILE AS NEEDED. **************
-// ************** DEFINE YOUR REACT COMPONENTS in ./components directory **************
 import React from "react";
-import "./stylesheets/App.css";
-import FakeStackOverflow from "./components/fakestackoverflow.js";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// Import page components
+import HomePage from "./pages/HomePage";
+import QuestionDetailPage from "./pages/QuestionDetailPage";
 
-function App() {
-    return (
-        <FakeStackOverflow />
-    );
-}
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/question/:id" element={<QuestionDetailPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
