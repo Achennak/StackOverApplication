@@ -2,21 +2,22 @@ import { useEffect, useState } from "react";
 import useQuestionStore from "../store/questionStore";
 import QuestionCard from "../components/QuestionCard";
 import useUserStore from "../store/userStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const fetchQuestions = useQuestionStore((state) => state.fetchQuestions);
   const questions = useQuestionStore((state) => state.questions);
   const user = useUserStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
-
-  if (!user) {
-    //TODO: navigate to signup page
-  }
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
+    if (!user) {
+      navigate("/login");
+    } else {
+      fetchQuestions();
+    }
+  }, [fetchQuestions, user, navigate]);
 
   //TODO: filter questions based on search string
 

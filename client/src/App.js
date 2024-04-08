@@ -1,8 +1,11 @@
+// App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // Import page components
 import HomePage from "./pages/HomePage";
 import QuestionDetailPage from "./pages/QuestionDetailPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 const App = () => {
   return (
@@ -10,6 +13,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/question/:id" element={<QuestionDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </Router>
   );
