@@ -33,6 +33,7 @@ const useUserStore = create((set) => ({
   },
   login: async (credentials) => {
     try {
+      console.log(credentials);
       const response = await axiosInstance.post("/user/login", credentials);
       const token = response.data.token;
       localStorage.setItem("token", token);

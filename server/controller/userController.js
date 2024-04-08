@@ -7,17 +7,18 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { userName, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(409).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     // Create a new user
     const newUser = new User({
-      userName,
+      userName: username,
       email,
       password: hashedPassword,
       isAdmin: false,
@@ -36,16 +37,16 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log(`LOGIN: email is ${email} and password is: ${password}`);
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    const isPasswordSame = await bcrypt.compare(password, user.password);
+    if (!isPasswordSame) {
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     // Generate JWT token
