@@ -34,6 +34,7 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
+            data-testId="email-input-field"
             required
           />
         </div>
@@ -47,6 +48,7 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
+            data-testId="password-input-field"
             required
           />
         </div>
