@@ -1,8 +1,11 @@
 describe("Home Page", () => {
+  beforeEach(() => {
+    cy.visit("http://localhost:3000/login");
+    cy.get('[data-testId="email-input-field"]').type("test@test.com");
+    cy.get('[data-testId="password-input-field').type("1234");
+    cy.get("button[type=submit").click();
+  });
   it("user image is present", () => {
-    // Visit the home page
-    cy.visit("http://localhost:3000/");
-
     // Replace this with logic
     const isAuthenticated = true;
 
@@ -14,7 +17,7 @@ describe("Home Page", () => {
   });
   it("Questions title is present", () => {
     // Visit the home page
-    cy.visit("http://localhost:3000/");
+    // cy.visit("http://localhost:3000/");
 
     // Replace this with logic
     const isAuthenticated = true;
@@ -27,7 +30,7 @@ describe("Home Page", () => {
   });
   it("Search box is present", () => {
     // Visit the home page
-    cy.visit("http://localhost:3000/");
+    // cy.visit("http://localhost:3000/");
 
     // Replace this with logic
     const isAuthenticated = true;
