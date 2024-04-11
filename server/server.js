@@ -18,8 +18,13 @@ app.get("/", (_, res) => {
   res.end();
 });
 const userController = require("./controller/userController");
+const questionController = require("./controller/questionController");
+const authController = require("./controller/authentication_middleware");
 
+app.use("./user",authController);
 app.use("/user", userController);
+app.use("./question",authController);
+app.use("/question",questionController);
 
 let server = app.listen(port, () => {
   console.log(`Server starts at http://localhost:${port}`);
