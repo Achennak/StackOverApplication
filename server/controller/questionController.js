@@ -60,9 +60,9 @@ try{
     if (title === undefined) title = "Default Title";
     if (text === undefined) text = "Default Text";
     if (tagIds === undefined) tagIds = [];
-    if (answerIds === undefined) answers = [];
+    if (answerIds === undefined) answerIds = [];
     
-    const userId = req.users._id;
+    const userId = req.user._id;
     // Add tags
     const rtagIds = [];
         for (const tagName of tagIds) {
@@ -74,7 +74,7 @@ try{
         title,
         text,
         tagIds: rtagIds,
-        answerIds: [],
+        answerIds: answerIds,
         userId:userId,
         creationDate: new Date(),
         views: 0,
