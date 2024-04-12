@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const answerSchema = mongoose.Schema(
   {
     text: { type: String, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    likes: { type: Number, Default: 0 },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    likedBy:[{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     creationDate: { type: Date, default: Date.now },
   },
   { collection: "Answer" }
