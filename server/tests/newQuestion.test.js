@@ -26,14 +26,14 @@ const tag2 = {
 const ans1 = {
   _id: '65e9b58910afe6e94fc6e6dc',
   text: 'Answer 1 Text',
-  userId: 'answer1_user',
+  createdBy: 'answer1_user',
   
 }
 
 const ans2 = {
   _id: '65e9b58910afe6e94fc6e6dd',
   text: 'Answer 2 Text',
-  userId: 'answer2_user',
+  createdBy: 'answer2_user',
 }
 
 const mockQuestions = [
@@ -159,7 +159,7 @@ describe('GET /getQuestionById/:qid', () => {
     };
 
     const mockPopulatedQuestion = {
-        answers: [mockQuestions.filter(q => q._id == mockReqParams.qid)[0]['answers']], // Mock answers
+        answers: [mockQuestions.filter(q => q._id == mockReqParams.qid)[0]['answerIds']], // Mock answers
         views: mockQuestions[1].views + 1
     };
     
@@ -198,8 +198,8 @@ describe('POST /addQuestion', () => {
       _id: '65e9b58910afe6e94fc6e6fe',
       title: 'Question 3 Title',
       text: 'Question 3 Text',
-      tags: [tag1, tag2],
-      answers: [ans1],
+      tagIds: [tag1, tag2],
+      answerIds: [ans1],
     }
 
     addTag.mockResolvedValueOnce(mockTags);
