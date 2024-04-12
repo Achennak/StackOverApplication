@@ -75,10 +75,9 @@ try{
         text,
         tagIds: rtagIds,
         answerIds: answerIds,
-        userId:userId,
+        createdBy:userId,
         creationDate: new Date(),
         views: 0,
-        likes: 0
     });
     console.log(newQuestion);
     res.status(200).json(newQuestion);
