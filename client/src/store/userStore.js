@@ -1,10 +1,12 @@
-import create from "zustand";
+import { create } from "zustand";
 import axiosInstance from "../api/axiosInstance";
 import { jwtDecode } from "jwt-decode";
 
 const useUserStore = create((set) => ({
-  user: null,
-  isAuthenticated: false,
+  user: localStorage.getItem("token")
+    ? jwtDecode(localStorage.getItem("token"))
+    : null,
+  isAuthenticated: !!localStorage.getItem("token"),
   fetchUser: async () => {
     try {
       // Simulating an API call with dummy user data
@@ -51,8 +53,7 @@ const useUserStore = create((set) => ({
   checkAuth: () => {
     const token = localStorage.getItem("token");
     if (token) {
-      set({ isAuthenticated: true });
-      set({ user: jwtDecode(token) });
+      set({ isAuthenticated: true, user: jwtDecode(token) });
     }
   },
 }));
