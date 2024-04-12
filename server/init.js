@@ -4,13 +4,13 @@ const bcrypt = require("bcrypt");
 
 const { MONGO_URL } = require("./config");
 const User = require("./models/user");
-const Tag = require('./models/tags')
-const Answer = require('./models/answer')
-const Question = require('./models/question')
+const Tag = require("./models/tags");
+const Answer = require("./models/answer");
+const Question = require("./models/question");
 
-const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
+// const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
 
-mongoose.connect(localhost_MONGO_URL);
+mongoose.connect(MONGO_URL);
 
 let db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -83,12 +83,9 @@ function questionCreate(
   return qstn.save();
 }
 
-
-
 const populate = async () => {
   //creat Admin
   await createAdminUser();
-
 
   //create tags
   let t1 = await tagCreate("react");
