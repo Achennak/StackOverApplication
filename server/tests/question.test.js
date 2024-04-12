@@ -53,28 +53,28 @@ const _tag3 = {
 const _ans1 = {
     _id: '65e9b58910afe6e94fc6e6dc',
     text: 'ans1',
-    userId: user1,
+    createdBy: user1,
     creationDate: new Date('2023-11-18T09:24:00')
 }
 
 const _ans2 = {
     _id: '65e9b58910afe6e94fc6e6dd',
     text: 'ans2',
-    userId: user2,
+    createdBy: user2,
     creationDate: new Date('2023-11-20T09:24:00')
 }
 
 const _ans3 = {
     _id: '65e9b58910afe6e94fc6e6de',
     text: 'ans3',
-    userId: user3,
+    createdBy: user3,
     creationDate: new Date('2023-11-19T09:24:00')
 }
 
 const _ans4 = {
     _id: '65e9b58910afe6e94fc6e6df',
     text: 'ans4',
-    userId: user4,
+    createdBy: user4,
     creationDate: new Date('2023-11-19T09:24:00')
 }
 

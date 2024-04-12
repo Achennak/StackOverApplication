@@ -8,7 +8,7 @@ const Tag = require("./models/tags");
 const Answer = require("./models/answer");
 const Question = require("./models/question");
 
-// const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
+ //const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
 
 mongoose.connect(MONGO_URL);
 
@@ -47,11 +47,11 @@ function tagCreate(name) {
   return tag.save();
 }
 
-function answerCreate(text, userId, creationDate, likes) {
-  let answerdetail = { text: text, userId: userId };
+function answerCreate(text, userId, creationDate, likedBy) {
+  let answerdetail = { text: text, createdBy: userId };
 
   if (creationDate != false) answerdetail.creationDate = creationDate;
-  if (likes != false) answerdetail.likes = likes;
+  if (likedBy != false) answerdetail.likedBy = likedBy;
 
   let answer = new Answer(answerdetail);
   return answer.save();
@@ -65,19 +65,19 @@ function questionCreate(
   userId,
   creationDate,
   views,
-  likes
+  likedBy
 ) {
   let qstndetail = {
     title: title,
     text: text,
-    userId: userId,
+    createdBy: userId,
     tagIds: tags,
   };
 
   if (answers != false) qstndetail.answerIds = answers;
   if (creationDate != false) qstndetail.creationDate = creationDate;
   if (views != false) qstndetail.views = views;
-  if (likes != false) qstndetail.likes = likes;
+  if (likedBy != false) qstndetail.likedBy = likedBy;
 
   let qstn = new Question(qstndetail);
   return qstn.save();

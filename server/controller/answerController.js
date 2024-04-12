@@ -15,8 +15,7 @@ const addAnswer = async (req, res) => {
     // Create a new answer
     const newAnswer = await Answer.create({
       text: ans.text,
-      userId: userId,
-      likes: 0,
+      createdBy: userId,
       creationDate: ans.creationDate || Date.now(),
     });
 
