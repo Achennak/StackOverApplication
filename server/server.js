@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const { MONGO_URL, CLIENT_URL,port } = require("./config");
+const { Local_MONGO_URL,MONGO_URL, CLIENT_URL,port } = require("./config");
 
 mongoose.connect(MONGO_URL);
 
@@ -21,10 +21,12 @@ const userController = require("./controller/userController");
 const questionController = require("./controller/questionController");
 const authenticateToken = require("./controller/authentication_middleware");
 const answerController = require("./controller/answerController");
+const tagsController = require("./controller/tagsController");
 
 app.use("/user", userController);
 app.use("/question",authenticateToken,questionController);
 app.use("/answer",authenticateToken,answerController);
+app.use("/tag",tagsController);
 
 
 let server = app.listen(port, () => {
@@ -38,5 +40,5 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-module.exports = {app,server}
+module.exports = server
 
