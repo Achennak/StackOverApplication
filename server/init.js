@@ -47,8 +47,8 @@ function tagCreate(name) {
   return tag.save();
 }
 
-function answerCreate(text, userId, creationDate, likedBy) {
-  let answerdetail = { text: text, createdBy: userId };
+function answerCreate(text, createdBy, creationDate, likedBy) {
+  let answerdetail = { text: text, createdBy: createdBy };
 
   if (creationDate != false) answerdetail.creationDate = creationDate;
   if (likedBy != false) answerdetail.likedBy = likedBy;
@@ -62,7 +62,7 @@ function questionCreate(
   text,
   tags,
   answers,
-  userId,
+  createdBy,
   creationDate,
   views,
   likedBy
@@ -70,7 +70,7 @@ function questionCreate(
   let qstndetail = {
     title: title,
     text: text,
-    createdBy: userId,
+    createdBy: createdBy,
     tagIds: tags,
   };
 
