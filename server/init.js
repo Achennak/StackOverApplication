@@ -164,7 +164,8 @@ const populate = async () => {
     [a1, a2],
     userId1,
     new Date("2022-01-20T03:00:00"),
-    10
+    10,
+    []
   );
   await questionCreate(
     "android studio save string shared preference, start activity and load the saved string",

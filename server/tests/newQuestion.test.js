@@ -1,7 +1,8 @@
 const supertest = require("supertest") 
 const { default: mongoose } = require("mongoose");
-
+const jwt = require('jsonwebtoken');
 const Question = require('../models/question');
+const authenticateToken = require("../controller/authentication_middleware");
 const { addTag, getQuestionsByOrder, filterQuestionsBySearch } = require('../utils/question');
 
 // Mocking the models
@@ -13,7 +14,6 @@ jest.mock('../utils/question', () => ({
 }));
 
 let server;
-
 const tag1 = {
   _id: '507f191e810c19729de860ea',
   tagName: 'tag1'
@@ -57,18 +57,21 @@ const mockQuestions = [
 
 describe('GET /getQuestion', () => {
 
-  beforeEach(() => {
-    server = require("../server");
+  beforeEach( () => {
+    server =  require("../server");
   })
 
   afterEach(async() => {
-    server.close();
+    if (server) {
+      server.close();
+    }
+    
     await mongoose.disconnect()
+   
   });
 
   it('should return questions by filter', async () => {
-    // Mock request query parameters
-    //dummy object
+  
     const mockReqQuery = {
       order: 'someOrder',
       search: 'someSearch',
@@ -76,7 +79,8 @@ describe('GET /getQuestion', () => {
    
     getQuestionsByOrder.mockResolvedValueOnce(mockQuestions);
     filterQuestionsBySearch.mockReturnValueOnce(mockQuestions);
-    // Making the request
+    
+
     const response = await supertest(server)
       .get('/question/getQuestion')
       .query(mockReqQuery);
@@ -103,12 +107,12 @@ describe('GET /getQuestionById/:qid', () => {
 
     // Mock request parameters
     const mockReqParams = {
-      qid: 'null', //null or not existing in DB , when DB is down
+      qid: null, //null or not existing in DB , when DB is down
     };
     // Making the request
     const response = await supertest(server)
       .get(`/question/getQuestionById/${mockReqParams.qid}`);
-    console.log("response is :",response.body);
+    
     // Asserting the response
     expect(response.status).toBe(500);
     expect(response.body).toEqual({"error": "Internal server error"});
@@ -202,17 +206,69 @@ describe('POST /addQuestion', () => {
       answerIds: [ans1],
     }
 
+    const authenticatedUser = { _id: 'dummyUser' };
+    // Mock verifyToken function to simulate authentication
+    authenticateToken.verifyToken = jest.fn((req, res, next) => {
+      req.user = authenticatedUser;
+      next();
+    });
+
     addTag.mockResolvedValueOnce(mockTags);
     Question.create.mockResolvedValueOnce(mockQuestion);
+
+    const token = jwt.sign(authenticatedUser, "random_key");
 
     // Making the request
     const response = await supertest(server)
       .post('/question/addQuestion')
+      .set('authorization', token)
       .send(mockQuestion);
 
     // Asserting the response
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestion);
 
+  });
+
+
+  it('should return 401 when user is not logged in', async () => {
+    // Mock request body
+    const mockQuestion = {
+      title: 'Question 3 Title',
+      text: 'Question 3 Text',
+      tagIds: [tag1, tag2],
+      answerIds: [ans1],
+    }
+
+    // Making the request without setting the Authorization header
+    const response = await supertest(server)
+      .post('/question/addQuestion')
+      .send(mockQuestion);
+
+    // Asserting the response
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: "No token provided" });
+  });
+
+  it('should return 403 when user provides an invalid token', async () => {
+    // Mock request body
+    const mockQuestion = {
+      title: 'Question 3 Title',
+      text: 'Question 3 Text',
+      tagIds: [tag1, tag2],
+      answerIds: [ans1],
+    }
+
+    const invalidToken = "invalid_token";
+
+    // Making the request with the invalid token in the Authorization header
+    const response = await supertest(server)
+      .post('/question/addQuestion')
+      .set('authorization', invalidToken)
+      .send(mockQuestion);
+
+    // Asserting the response
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ message: "Invalid token" });
   });
 });

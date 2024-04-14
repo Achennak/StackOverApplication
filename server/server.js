@@ -6,6 +6,23 @@ const { MONGO_URL, CLIENT_URL,port } = require("./config");
 
 mongoose.connect(MONGO_URL);
 
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
+
+// Check for disconnection
+db.on('disconnected', () => {
+  console.log('Disconnected from MongoDB');
+});
+
+// Check for reconnection
+db.on('reconnected', () => {
+  console.log('Reconnected to MongoDB');
+});
+
 const app = express();
 
 app.use(cors({credentials: true,
@@ -23,20 +40,22 @@ const authenticateToken = require("./controller/authentication_middleware");
 const answerController = require("./controller/answerController");
 
 app.use("/user", userController);
-app.use("/question",authenticateToken,questionController);
+app.use("/question/addQuestion",authenticateToken);
+app.use("/question",questionController);
 app.use("/answer",authenticateToken,answerController);
 
 
-let server = app.listen(port, () => {
-  console.log(`Server starts at http://localhost:${port}`);
-});
+  
+server = app.listen(port, () => {
+    console.log(`Server starts at http://localhost:${port}`);
+  });
 
-process.on("SIGINT", () => {
-  server.close();
-  mongoose.disconnect();
-  console.log("Server closed. Database instance disconnected");
-  process.exit(0);
-});
+  process.on("SIGINT", () => {
+    server.close();
+    mongoose.disconnect();
+    console.log("Server closed. Database instance disconnected");
+    process.exit(0);
+  });
 
-module.exports = {app,server}
+module.exports = server
 

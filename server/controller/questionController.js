@@ -1,6 +1,7 @@
 const express = require("express");
 const authenticateToken = require("./authentication_middleware");
 const { addTag, getQuestionsByOrder, filterQuestionsBySearch } = require('../utils/question');
+const Question = require("../models/question");
 
 
 const router = express.Router();
@@ -33,6 +34,10 @@ const getQuestionsByFilter = async (req, res) => {
 const getQuestionById = async (req, res) => {
     try {
         const { qid } = req.params;
+        
+        if (qid === null) {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
         console.log("questionid",qid);
         const question = await Question.findOneAndUpdate(
             { _id: qid }, 
@@ -53,7 +58,9 @@ const getQuestionById = async (req, res) => {
 // To add Question
 const addQuestion = async (req,res) => {   
 try{
-
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
     let { title, text, tagIds, answerIds } = req.body;
 
     // Set default values if parameters are undefined
