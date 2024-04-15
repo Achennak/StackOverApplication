@@ -13,16 +13,6 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-// Check for disconnection
-db.on('disconnected', () => {
-  console.log('Disconnected from MongoDB');
-});
-
-// Check for reconnection
-db.on('reconnected', () => {
-  console.log('Reconnected to MongoDB');
-});
-
 const app = express();
 
 app.use(cors({credentials: true,
