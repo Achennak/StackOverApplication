@@ -15,14 +15,13 @@ const addAnswer = async (req, res) => {
     // Create a new answer
     const newAnswer = await Answer.create({
       text: ans.text,
-      createdBy: userId,
-      creationDate: ans.creationDate || Date.now(),
+      createdBy: userId
     });
 
     // Update the question document to add the new answer ID
     const updatedQuestion = await Question.findOneAndUpdate(
       { _id: qid },
-      { $push: { answers: { $each: [newAnswer._id], $position: 0 } } },
+      { $push: { answerIds: { $each: [newAnswer._id], $position: 0 } } },
       { new: true }
     );
 
