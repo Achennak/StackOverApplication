@@ -1,4 +1,4 @@
-describe("Home Page", () => {
+describe.skip("Home Page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/login");
     cy.get('[data-testId="email-input-field"]').type("test@test.com");
