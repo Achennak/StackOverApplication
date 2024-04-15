@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Question = require('../models/question');
 const authenticateToken = require("../controller/authentication_middleware");
 const { addTag, getQuestionsByOrder, filterQuestionsBySearch } = require('../utils/question');
+const { MONGO_URL } = require('../config');
 
 // Mocking the models
 jest.mock("../models/question");
@@ -13,7 +14,7 @@ jest.mock('../utils/question', () => ({
   filterQuestionsBySearch: jest.fn(),
 }));
 
-let server;
+
 const tag1 = {
   _id: '507f191e810c19729de860ea',
   tagName: 'tag1'
@@ -54,21 +55,39 @@ const mockQuestions = [
       views: 99
   }
 ]
+let server
 
-describe('GET /getQuestion', () => {
 
-  beforeEach( () => {
-    server =  require("../server");
+describe.only('GET /getQuestion', () => {
+
+  beforeEach(async () => {
+    console.log('Connecting to MongoDB...');
+    server = require('../server');
+  //await mongoose.connect(MONGO_URL);
+  console.log('Connected to MongoDB');
   })
 
   afterEach(async() => {
+    console.log('Closing server...');
     if (server) {
-      server.close();
+      await server.close();
+      console.log('Server closed');
+    } else {
+      console.log('No server to close');
     }
-    
-    await mongoose.disconnect()
+    console.log('Current MongoDB connections:', mongoose.connection.readyState);
+
+    console.log('Disconnecting from MongoDB...');
+    try {
+      await mongoose.disconnect();
+      console.log('Disconnected from MongoDB');
+    } catch (error) {
+      console.error('Error disconnecting from MongoDB:', error);
+    }
+    //console.log('Current MongoDB connections:', mongoose.connection.readyState);
+
    
-  });
+  },10000);
 
   it('should return questions by filter', async () => {
   
