@@ -110,7 +110,7 @@ const mockReqBody = {
       .post("/answer/addAnswer")
       .set("Authorization", invalidToken)
       .send(mockReqBody);
-  
+
     // Asserting the response
     expect(response.status).toBe(403);
     expect(response.body).toEqual({ message: "Invalid token" });
