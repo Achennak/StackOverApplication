@@ -58,7 +58,7 @@ const mockQuestions = [
 let server
 
 
-describe.only('GET /getQuestion', () => {
+describe('GET /getQuestion', () => {
 
   beforeEach(async () => {
     console.log('Connecting to MongoDB...');
