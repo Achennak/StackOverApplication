@@ -1,10 +1,22 @@
 const express = require("express");
+const Question = require("../models/question");
 const authenticateToken = require("./authentication_middleware");
 const { addTag, getQuestionsByOrder, filterQuestionsBySearch } = require('../utils/question');
 
 
 const router = express.Router();
 
+router.get('/getQuestionsByUserId/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    console.log("getQuestionsByUserId/",userId);
+    try {
+        const questions = await Question.find({ createdBy: userId }).populate('tagIds').populate('answerIds').populate('createdBy').exec();
+        res.json(questions);
+    } catch (error) {
+        console.error('Error fetching questions:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {

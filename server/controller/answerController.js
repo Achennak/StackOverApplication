@@ -2,8 +2,22 @@ const express = require("express");
 const Answer = require("../models/answer");
 const Question = require("../models/question");
 const authenticateToken = require("./authentication_middleware");
+const { getQuestionsByOrder } = require("../utils/question");
 
 const router = express.Router();
+
+
+const getAnswersForUser = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+      const answers = await Answer.find({ createdBy: userId }).populate('createdBy').exec();
+      res.json(answers);
+  } catch (error) {
+      console.error('Error fetching answers:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // Adding answer
 const addAnswer = async (req, res) => {
@@ -104,13 +118,10 @@ const deleteAnswer = async (req, res) => {
   }
 };
 
+router.get('/getAnswersByUserId/:userId',authenticateToken,getAnswersForUser);
 router.delete("/:answerId", authenticateToken, deleteAnswer);
-
-
 router.put("/:answerId/dislike", authenticateToken, dislikeAnswer);
-
 router.put("/:answerId/like", authenticateToken, likeAnswer);
-
 router.post("/addAnswer", authenticateToken, addAnswer);
 
 module.exports = router;
