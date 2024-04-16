@@ -23,22 +23,15 @@ describe('GET /getTagsWithQuestionNumber', () => {
         server = require("../server");
     })
     afterEach(async() => {
-        console.log('Closing server...');
+        
         if (server) {
           await server.close();
-          console.log('Server closed');
-        } else {
-          console.log('No server to close');
-        }
-        console.log('Current MongoDB connections:', mongoose.connection.readyState);
-    
-        console.log('Disconnecting from MongoDB...');
-        try {
-          await mongoose.disconnect();
-          console.log('Disconnected from MongoDB');
-        } catch (error) {
-          console.error('Error disconnecting from MongoDB:', error);
-        }
+         
+        } 
+     
+       await mongoose.disconnect();
+          
+         
     });
 
     it('should return tags with question numbers', async () => {
@@ -48,7 +41,7 @@ describe('GET /getTagsWithQuestionNumber', () => {
         Question.find = jest.fn().mockImplementation(() => ({ populate: jest.fn().mockResolvedValueOnce(mockQuestions)}));
 
         // Making the request
-        const response = await supertest(server).get('/tag/getTagsWithQuestionNumber');
+        const response = await supertest(server).get('/tags/getTagsWithQuestionNumber');
 
         // Asserting the response
         expect(response.status).toBe(200);

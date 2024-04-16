@@ -24,25 +24,30 @@ jobs:
           cd ../server
           npm ci
 
-      - name: Run Jest tests
-        run: |
-          cd server
-          npm test
-
       - name: Run Cypress tests
         run: |
           cd client
           npm run test:cypress
 
+      - name: Generate Cypress coverage report
+        run: |
+            cd client
+            npm run test:cypress --coverage  
+
+      - name: Upload Cypress coverage report
+        uses: actions/upload-artifact@v2
+        with:
+              name: cypress-coverage
+              path: client/coverage
+      - name: Run Jest tests
+        run: |
+            cd server
+            npm test      
+
       - name: Generate Jest coverage report
         run: |
           cd server
           npm test --coverage
-
-      - name: Generate Cypress coverage report
-        run: |
-          cd client
-          npm run test:cypress --coverage
 
       - name: Upload Jest coverage report
         uses: actions/upload-artifact@v2
@@ -50,8 +55,4 @@ jobs:
           name: jest-coverage
           path: server/coverage
 
-      - name: Upload Cypress coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-coverage
-          path: client/coverage
+     

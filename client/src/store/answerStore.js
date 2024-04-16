@@ -28,7 +28,7 @@ const useAnswerStore = create((set, get) => ({
   },
   postAnswer: async (answer) => {
     try {
-      const response = await axiosInstance.post("/answers", answer);
+      const response = await axiosInstance.post("/answers/addAnswer", answer);
       set((state) => ({
         answers: [...state.answers, response.data],
       }));

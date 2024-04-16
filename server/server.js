@@ -24,9 +24,9 @@ const answerController = require("./controller/answerController");
 const tagsController = require("./controller/tagsController");
 
 app.use("/user", userController);
-app.use("/question",authenticateToken,questionController);
-app.use("/answer",authenticateToken,answerController);
-app.use("/tag",tagsController);
+app.use("/questions",authenticateToken,questionController);
+app.use("/answers",authenticateToken,answerController);
+app.use("/tags",tagsController);
 
 
 let server = app.listen(port, () => {
