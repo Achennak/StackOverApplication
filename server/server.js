@@ -41,10 +41,10 @@ const answerController = require("./controller/answerController");
 const tagsController = require("./controller/tagsController");
 
 app.use("/user", userController);
-app.use("/question/addQuestion",authenticateToken);
-app.use("/question",questionController);
-app.use("/answer",authenticateToken,answerController);
-app.use("/tag",tagsController);
+app.use("/questions/addQuestion",authenticateToken,questionController);
+app.use("/questions",questionController);
+app.use("/answers",authenticateToken,answerController);
+app.use("/tags",tagsController);
 
 
   

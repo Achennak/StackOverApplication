@@ -9,7 +9,7 @@ const authenticateToken = require("../controller/authentication_middleware");
 
 // Mock the Answer model
 jest.mock("../models/answer");
-;
+
 let server;
 describe("POST /addAnswer", () => {
  
@@ -59,7 +59,7 @@ const mockReqBody = {
 
     // Making the request
     const response = await supertest(server)
-      .post("/answer/addAnswer")
+      .post("/answers/addAnswer")
       .set("Authorization", token) 
       .send(mockReqBody);
 
@@ -86,7 +86,7 @@ const mockReqBody = {
   
     // Making the request without setting the Authorization header
     const response = await supertest(server)
-      .post("/answer/addAnswer")
+      .post("/answers/addAnswer")
       .send(mockReqBody);
   
     // Asserting the response
@@ -107,13 +107,59 @@ const mockReqBody = {
   
     // Making the request with the invalid token in the Authorization header
     const response = await supertest(server)
-      .post("/answer/addAnswer")
+      .post("/answers/addAnswer")
       .set("Authorization", invalidToken)
       .send(mockReqBody);
 
     // Asserting the response
     expect(response.status).toBe(403);
     expect(response.body).toEqual({ message: "Invalid token" });
+
   });
   
 });
+
+/*describe('PUT /answers/:answerId/like', () => {
+
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+  const mockAnswer = {
+    _id: '609b057ab12a0212040d18d2',
+    text: 'This is a test answer',
+    createdBy: '609b057ab12a0212040d18d1',
+    likedBy: [],
+    save: jest.fn(),
+  };
+
+  it('should like an answer', async () => {
+   Answer.findById.mockResolvedValueOnce(mockAnswer);
+
+    const res = await supertest(server)
+    .put('/answers/609b057ab12a0212040d18d2/like')
+    .send();
+
+    expect(res.status).toBe(200);
+    expect(mockAnswer.save).toHaveBeenCalled();
+    expect(mockAnswer.likedBy).toContain('609b057ab12a0212040d18d1');
+
+  });
+
+  it('should handle errors when liking an answer', async () => {
+
+    Answer.findById.mockRejectedValueOnce('Mock error');
+
+    const res = await supertest(server)
+    .put('/answers/609b057ab12a0212040d18d2/like')
+    .send();
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: 'Failed to like answer' });
+  });
+});*/
