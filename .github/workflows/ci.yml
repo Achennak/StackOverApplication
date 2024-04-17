@@ -39,6 +39,11 @@ jobs:
         with:
               name: cypress-coverage
               path: client/coverage
+              
+      - name: Kill server
+        run: |
+          lsof -ti:3000 | xargs kill -9  
+
       - name: Run Jest tests
         run: |
             cd server
