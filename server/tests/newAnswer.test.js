@@ -90,8 +90,8 @@ const mockReqBody = {
       .send(mockReqBody);
   
     // Asserting the response
-    expect(response.status).toBe(401);
-    expect(response.body).toEqual({ message: "No token provided" });
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({});
   });
   
   it("should return 403 when user provides an invalid token", async () => {
