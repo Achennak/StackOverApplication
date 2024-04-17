@@ -1,12 +1,14 @@
 const { default: mongoose } = require("mongoose");
 const User = require("../models/user");
 const supertest = require("supertest");
+const bcrypt = require("bcrypt");
+
 
 jest.mock("../models/user");
 
 let server;
 
-describe.only("POST /user/signup", () => {
+describe("POST /user/signup", () => {
   beforeEach(() => {
     server = require("../server");
   });
@@ -15,6 +17,7 @@ describe.only("POST /user/signup", () => {
     server.close();
     await mongoose.disconnect();
   });
+
   it("should signup a new user", async () => {
     const userData = {
       username: "testuser",
@@ -31,12 +34,7 @@ describe.only("POST /user/signup", () => {
   });
 
   it("should return 409 if user already exists", async () => {
-    const existingUser = new User({
-      username: "existinguser",
-      email: "existing@example.com",
-      password: "password123",
-    });
-    await existingUser.save();
+    User.findOne.mockResolvedValueOnce([{ email: "existing@example.com" }]);
 
     const userData = {
       username: "existinguser",
@@ -44,11 +42,13 @@ describe.only("POST /user/signup", () => {
       password: "password123",
     };
 
-    await supertest(server).post("/user/signup").send(userData).expect(409);
+    const response = await supertest(server).post("/user/signup").send(userData);
+    expect(response.status).toBe(409);
+   
   });
 });
 
-describe("POST /user/login", () => {
+describe.only("POST /user/login", () => {
     beforeEach( () => {
         server = require('../server');
       });
@@ -58,13 +58,24 @@ describe("POST /user/login", () => {
         await mongoose.disconnect()
        
       });
+      
   it("should login with valid credentials", async () => {
+    const password = "password123";
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
     const user = new User({
       username: "testuser",
       email: "test@example.com",
-      password: "password123",
+      password: hashedPassword,
     });
-    await user.save();
+
+    User.create.mockResolvedValueOnce(user);
+
+    //console.log('Mocked User:', User.findOne.mockResolvedValueOnce(user));
+
+
+    //User.findOne.mockResolvedValueOnce([{ email: "test@example.com" }]);
 
     const loginData = {
       email: "test@example.com",
