@@ -26,7 +26,7 @@ router.get("/getQuestionsByUserId/:userId", async (req, res) => {
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {
-  try {
+    try{
     const { order, search } = req.query;
     console.log(order);
     console.log(search);
@@ -40,46 +40,52 @@ const getQuestionsByFilter = async (req, res) => {
       orderedQuestions,
       search
     );
+    const filteredQuestions = await filterQuestionsBySearch(
+      orderedQuestions,
+      search
+    );
     console.log("filtered questions ", filteredQuestions);
 
     res.json(filteredQuestions);
   } catch (error) {
+  } catch (error) {
     console.error("Error getting questions by filter:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
   }
 };
 
 // To get Questions by Id
 const getQuestionById = async (req, res) => {
-    try {
-        const { qid } = req.params;
-        
-        if (qid === null) {
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-        console.log("questionid",qid);
-        const question = await Question.findOneAndUpdate(
-            { _id: qid }, 
-            { $inc: { views: 1 } }, 
-            { new: true } 
-        ).populate('answerIds');
-        console.log(question);
-        if (!question) {
-            return res.status(404).json({ error: 'Question not found' });
-        }
-        res.json(question);
-    } catch (error) {
-        console.error("Error getting question by ID:", error);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    const { qid } = req.params;
+
+    if (qid === null) {
+      return res.status(500).json({ error: "Internal server error" });
     }
+    console.log("questionid", qid);
+    const question = await Question.findOneAndUpdate(
+      { _id: qid },
+      { $inc: { views: 1 } },
+      { new: true }
+    ).populate("answerIds");
+    console.log(question);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+    res.json(question);
+  } catch (error) {
+    console.error("Error getting question by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 // To add Question
-const addQuestion = async (req,res) => {   
-try{
+const addQuestion = async (req, res) => {
+  try {
     if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     let { title, text, tagIds, answerIds } = req.body;
 
     // Set default values if parameters are undefined
@@ -88,9 +94,14 @@ try{
     if (tagIds === undefined) tagIds = [];
     if (answerIds === undefined) answerIds = [];
 
+
     const userId = req.user._id;
     // Add tags
     const rtagIds = [];
+    for (const tagName of tagIds) {
+      const tagId = await addTag(tagName);
+      rtagIds.push(tagId);
+    }
     for (const tagName of tagIds) {
       const tagId = await addTag(tagName);
       rtagIds.push(tagId);
@@ -104,14 +115,24 @@ try{
       createdBy: userId,
       creationDate: new Date(),
       views: 0,
+      title,
+      text,
+      tagIds: rtagIds,
+      answerIds: answerIds,
+      createdBy: userId,
+      creationDate: new Date(),
+      views: 0,
     });
     console.log(newQuestion);
     res.status(200).json(newQuestion);
   } catch (error) {
+  } catch (error) {
     console.error("Error adding question:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+  }
 };
+
 
 router.get("/getQuestion", getQuestionsByFilter);
 router.get("/getQuestionById/:qid", getQuestionById);
