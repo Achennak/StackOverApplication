@@ -5,8 +5,7 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-
-router.get("/details/:userId",async (req, res) =>{
+router.get("/details/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
 
