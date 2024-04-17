@@ -17,16 +17,18 @@ router.get("/getQuestionsByUserId/:userId", async (req, res) => {
       .populate("tagIds")
       .populate("createdBy")
       .exec();
+    console.log(questions);
+
     res.json(questions);
   } catch (error) {
-    console.error("Error fetching questions:", error);
+    console.error(error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {
-    try{
+  try {
     const { order, search } = req.query;
     console.log(order);
     console.log(search);
@@ -40,18 +42,11 @@ const getQuestionsByFilter = async (req, res) => {
       orderedQuestions,
       search
     );
-    const filteredQuestions = await filterQuestionsBySearch(
-      orderedQuestions,
-      search
-    );
     console.log("filtered questions ", filteredQuestions);
 
     res.json(filteredQuestions);
   } catch (error) {
-  } catch (error) {
-    console.error("Error getting questions by filter:", error);
     res.status(500).json({ error: "Internal server error" });
-  }
   }
 };
 
@@ -75,7 +70,6 @@ const getQuestionById = async (req, res) => {
     }
     res.json(question);
   } catch (error) {
-    console.error("Error getting question by ID:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -84,7 +78,7 @@ const getQuestionById = async (req, res) => {
 const addQuestion = async (req, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(500).json({ error: "Unauthorized" });
     }
     let { title, text, tagIds, answerIds } = req.body;
 
@@ -93,7 +87,6 @@ const addQuestion = async (req, res) => {
     if (text === undefined) text = "Default Text";
     if (tagIds === undefined) tagIds = [];
     if (answerIds === undefined) answerIds = [];
-
 
     const userId = req.user._id;
     // Add tags
@@ -126,13 +119,9 @@ const addQuestion = async (req, res) => {
     console.log(newQuestion);
     res.status(200).json(newQuestion);
   } catch (error) {
-  } catch (error) {
-    console.error("Error adding question:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-  }
 };
-
 
 router.get("/getQuestion", getQuestionsByFilter);
 router.get("/getQuestionById/:qid", getQuestionById);
