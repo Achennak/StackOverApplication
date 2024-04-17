@@ -8,8 +8,6 @@ const Tag = require("./models/tags");
 const Answer = require("./models/answer");
 const Question = require("./models/question");
 
- //const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
-
 mongoose.connect(MONGO_URL);
 
 let db = mongoose.connection;
