@@ -31,18 +31,28 @@ jobs:
 
       - name: Generate Cypress coverage report
         run: |
-            cd client
-            npm run test:cypress --coverage  
+          cd client
+          npm run test:cypress --coverage
 
       - name: Upload Cypress coverage report
         uses: actions/upload-artifact@v2
         with:
-              name: cypress-coverage
-              path: client/coverage
+          name: cypress-coverage
+          path: client/coverage
+
+      - name: Kill server
+        working-directory: server
+        run: |
+          # Find and kill the server process
+          SERVER_PID=$(pgrep -f "node server.js")
+          if [ -n "$SERVER_PID" ]; then
+           kill $SERVER_PID
+          fi
+
       - name: Run Jest tests
         run: |
-            cd server
-            npm test      
+          cd server
+          npm test
 
       - name: Generate Jest coverage report
         run: |
@@ -54,5 +64,3 @@ jobs:
         with:
           name: jest-coverage
           path: server/coverage
-
-     

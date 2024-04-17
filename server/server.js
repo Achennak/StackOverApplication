@@ -24,7 +24,8 @@ const answerController = require("./controller/answerController");
 const tagsController = require("./controller/tagsController");
 
 app.use("/user", userController);
-app.use("/questions",authenticateToken,questionController);
+app.use("/questions/addQuestion",authenticateToken,questionController);
+app.use("/questions",questionController);
 app.use("/answers",authenticateToken,answerController);
 app.use("/tags",tagsController);
 
