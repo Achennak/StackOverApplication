@@ -2,21 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const {MONGO_URL, CLIENT_URL,port } = require("./config");
+const { MONGO_URL, CLIENT_URL, port } = require("./config");
 
 mongoose.connect(MONGO_URL);
 
 const db = mongoose.connection;
 
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+db.once("open", () => {
+  console.log("Connected to MongoDB");
 });
 
 const app = express();
 
-app.use(cors({credentials: true,
-  origin: [CLIENT_URL],}));
+app.use(cors({ credentials: true, origin: [CLIENT_URL] }));
 app.use(express.json());
 
 app.get("/", (_, res) => {
@@ -39,15 +38,14 @@ app.use("/tags",tagsController);
 
   
 server = app.listen(port, () => {
-    console.log(`Server starts at http://localhost:${port}`);
-  });
+  console.log(`Server starts at http://localhost:${port}`);
+});
 
-  process.on("SIGINT", () => {
-    server.close();
-    mongoose.disconnect();
-    console.log("Server closed. Database instance disconnected");
-    process.exit(0);
-  });
+process.on("SIGINT", () => {
+  server.close();
+  mongoose.disconnect();
+  console.log("Server closed. Database instance disconnected");
+  process.exit(0);
+});
 
-module.exports = server
-
+module.exports = server;
