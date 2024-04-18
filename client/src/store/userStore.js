@@ -7,7 +7,7 @@ const useUserStore = create((set) => ({
     ? jwtDecode(localStorage.getItem("token"))
     : null,
   isAuthenticated: !!localStorage.getItem("token"),
-  /* fetchUser: async () => {
+ /* fetchUser: async () => {
     try {
       // Simulating an API call with dummy user data
       const dummyUser = {
@@ -22,14 +22,14 @@ const useUserStore = create((set) => ({
       console.error("Error fetching user:", error);
     }
   },*/
-  fetchUser: async () => {
+  fetchUser : async() =>{
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("No token found");
       }
 
-      const userId = jwtDecode(token).userId;
+      const userId = jwtDecode(token).userId; 
 
       const response = await axiosInstance.get(`/user/details/${userId}`);
       const userData = response.data;
@@ -38,7 +38,6 @@ const useUserStore = create((set) => ({
       console.error("Error fetching user:", error);
     }
   },
-
   signUp: async (userData) => {
     try {
       const response = await axiosInstance.post("/user/signup", userData);
@@ -72,28 +71,6 @@ const useUserStore = create((set) => ({
     const token = localStorage.getItem("token");
     if (token) {
       set({ isAuthenticated: true, user: jwtDecode(token) });
-    }
-  },
-  fetchQuestionsByUserId: async (userId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/questions/getQuestionsByUserId/${userId}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-      throw error;
-    }
-  },
-  fetchAnswersByUserId: async (userId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/answers/getAnswersByUserId/${userId}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching answers:", error);
-      throw error;
     }
   },
 }));
