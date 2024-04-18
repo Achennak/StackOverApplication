@@ -95,10 +95,6 @@ const addQuestion = async (req, res) => {
       const tagId = await addTag(tagName);
       rtagIds.push(tagId);
     }
-    for (const tagName of tagIds) {
-      const tagId = await addTag(tagName);
-      rtagIds.push(tagId);
-    }
     // Create new question
     const newQuestion = await Question.create({
       title,
@@ -107,14 +103,7 @@ const addQuestion = async (req, res) => {
       answerIds: answerIds,
       createdBy: userId,
       creationDate: new Date(),
-      views: 0,
-      title,
-      text,
-      tagIds: rtagIds,
-      answerIds: answerIds,
-      createdBy: userId,
-      creationDate: new Date(),
-      views: 0,
+      views: 0
     });
     console.log(newQuestion);
     res.status(200).json(newQuestion);
