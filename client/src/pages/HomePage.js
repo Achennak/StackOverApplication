@@ -6,12 +6,14 @@ import useUserStore from "../store/userStore";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../components/topbar";
 import Sidebar from "../components/sidebar";
+import { filterQuestions } from "../utils";
 
 const HomePage = () => {
   const fetchQuestions = useQuestionStore((state) => state.fetchQuestions);
   const questions = useQuestionStore((state) => state.questions);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredQuestions, setFilteredQuestions] = useState(questions);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,7 +24,9 @@ const HomePage = () => {
     }
   }, [fetchQuestions, isAuthenticated, navigate]);
 
-  //TODO: filter questions based on search string
+  useEffect(() => {
+    setFilteredQuestions(filterQuestions(questions, searchQuery));
+  }, [questions, searchQuery]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -39,7 +43,7 @@ const HomePage = () => {
             data-testId="home-page-search-box"
           />
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {questions.map((question) => (
+            {filteredQuestions.map((question) => (
               <QuestionCard key={question.id} question={question} />
             ))}
           </div>
