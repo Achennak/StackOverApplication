@@ -7,6 +7,7 @@ const CLIENT_URL = "http://localhost:3000";
 const port = 8000;
 
 module.exports = {
+  Local_MONGO_URL,
   MONGO_URL,
   CLIENT_URL,
   port,
