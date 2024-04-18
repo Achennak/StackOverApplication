@@ -134,6 +134,7 @@ router.get("/getAnswersByUserId/:userId", authenticateToken, getAnswersForUser);
 router.delete("/:answerId", authenticateToken, deleteAnswer);
 router.put("/:answerId/dislike", authenticateToken, dislikeAnswer);
 router.put("/:answerId/like", authenticateToken, likeAnswer);
+
 router.post("/addAnswer", authenticateToken, addAnswer);
 
 module.exports = router;

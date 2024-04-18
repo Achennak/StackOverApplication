@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-
 const { MONGO_URL, CLIENT_URL, port } = require("./config");
 
 mongoose.connect(MONGO_URL);
@@ -50,4 +49,3 @@ process.on("SIGINT", () => {
 });
 
 module.exports = server;
-

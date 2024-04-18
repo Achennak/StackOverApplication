@@ -30,7 +30,7 @@ router.post("/signup", async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(409).json({ message: "User already exists" });
+      return res.status(409).json({ message: "User already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -45,12 +45,13 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
     const token = jwt.sign({ userId: newUser._id }, "random_key");
-    res.status(201).json({ token });
+    return res.status(201).json({ token });
   } catch (error) {
     console.error("Error signing up:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   try {
@@ -59,6 +60,7 @@ router.post("/login", async (req, res) => {
     console.log(`LOGIN: email is ${email} and password is: ${password}`);
     // Check if user exists
     const user = await User.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
