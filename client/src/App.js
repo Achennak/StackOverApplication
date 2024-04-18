@@ -7,7 +7,6 @@ import QuestionDetailPage from "./pages/QuestionDetailPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
-import TagPage from "./pages/TagPage";
 
 const App = () => {
   return (
@@ -18,7 +17,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/tags" element={<TagPage />} />
+        <Route path="/tags" element={<HomePage />} />
       </Routes>
     </Router>
   );
