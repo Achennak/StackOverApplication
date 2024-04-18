@@ -8,8 +8,6 @@ const Tag = require("./models/tags");
 const Answer = require("./models/answer");
 const Question = require("./models/question");
 
- //const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
-
 mongoose.connect(MONGO_URL);
 
 let db = mongoose.connection;
@@ -62,7 +60,7 @@ function questionCreate(
   text,
   tags,
   answers,
-  userId,
+  createdBy,
   creationDate,
   views,
   likedBy
@@ -164,7 +162,8 @@ const populate = async () => {
     [a1, a2],
     userId1,
     new Date("2022-01-20T03:00:00"),
-    10
+    10,
+    []
   );
   await questionCreate(
     "android studio save string shared preference, start activity and load the saved string",

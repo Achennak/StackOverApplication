@@ -44,7 +44,6 @@ const getQuestionsByFilter = async (req, res) => {
 
     res.json(filteredQuestions);
   } catch (error) {
-    console.error("Error getting questions by filter:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -73,6 +72,9 @@ const getQuestionById = async (req, res) => {
 // To add Question
 const addQuestion = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(500).json({ error: "Unauthorized" });
+    }
     let { title, text, tagIds, answerIds } = req.body;
 
     // Set default values if parameters are undefined
@@ -101,7 +103,7 @@ const addQuestion = async (req, res) => {
     console.log(newQuestion);
     res.status(200).json(newQuestion);
   } catch (error) {
-    console.error("Error adding question:", error);
+
     res.status(500).json({ error: "Internal server error" });
   }
 };
