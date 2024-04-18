@@ -51,28 +51,35 @@ const getQuestionsByFilter = async (req, res) => {
 
 // To get Questions by Id
 const getQuestionById = async (req, res) => {
-  try {
-    const { qid } = req.params;
-    console.log("questionid", qid);
-    const question = await Question.findOneAndUpdate(
-      { _id: qid },
-      { $inc: { views: 1 } },
-      { new: true }
-    ).populate("answerIds");
-    console.log(question);
-    if (!question) {
-      return res.status(404).json({ error: "Question not found" });
+    try {
+        const { qid } = req.params;
+        
+        if (qid === null) {
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        console.log("questionid",qid);
+        const question = await Question.findOneAndUpdate(
+            { _id: qid }, 
+            { $inc: { views: 1 } }, 
+            { new: true } 
+        ).populate('answerIds');
+        console.log(question);
+        if (!question) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+        res.json(question);
+    } catch (error) {
+        console.error("Error getting question by ID:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-    res.json(question);
-  } catch (error) {
-    console.error("Error getting question by ID:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 // To add Question
-const addQuestion = async (req, res) => {
-  try {
+const addQuestion = async (req,res) => {   
+try{
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
     let { title, text, tagIds, answerIds } = req.body;
 
     // Set default values if parameters are undefined
