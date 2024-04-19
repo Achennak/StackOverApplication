@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const QuestionCard = ({ question }) => {
-  const { id, title, body, tags } = question;
+  const { id, title, text, tags } = question;
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -15,7 +15,7 @@ const QuestionCard = ({ question }) => {
       onClick={handleClick}
     >
       <h2 className="text-xl font-bold mb-4">{title}</h2>
-      <p className="text-gray-700 mb-4">{body}</p>
+      <p className="text-gray-700 mb-4">{text}</p>
       <div className="flex flex-wrap">
         {tags.map((tag) => (
           <span

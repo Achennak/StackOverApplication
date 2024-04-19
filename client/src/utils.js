@@ -105,7 +105,7 @@ const filterQuestions = (questions, search = "") => {
     if (searchText.length > 0) {
       filterText = copyQuestion.filter((q) => {
         const titleWords = q.title.toLowerCase().split(" ");
-        const textWords = q.body.toLowerCase().split(" ");
+        const textWords = q.text.toLowerCase().split(" ");
         for (const searchWord of searchText.split(" ")) {
           if (
             titleWords.includes(searchWord.toLowerCase()) ||
