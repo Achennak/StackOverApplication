@@ -31,9 +31,9 @@ const ProfilePage = () => {
   }, [isAuthenticated, navigate, fetchUser]);
 
   useEffect(() => {
-    setUserData(user);
     console.log(user);
     if (user) {
+      setUserData(user);
       fetchQuestionsByUserId(user._id)
         .then((questions) => setQuestions(questions))
         .catch((error) => console.error("Error fetching questions:", error));
@@ -83,7 +83,6 @@ const ProfilePage = () => {
       return <p>Loading user data...</p>;
     }
   };
-  
 
   return (
     <div className="flex flex-col min-h-screen">

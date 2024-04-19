@@ -92,7 +92,6 @@ const populate = async () => {
   let t4 = await tagCreate("shared-preferences");
   let t5 = await tagCreate("storage");
   let t6 = await tagCreate("website");
-  let t7 = await tagCreate("Flutter");
 
   //create users
   let user1 = await createUser("user1", "user1@example.com", "password123");

@@ -112,8 +112,30 @@ const addQuestion = async (req, res) => {
   }
 };
 
+const getAllQuestions = async (req, res) => {
+  try {
+    const questions = await Question.find()
+      .populate("tagIds", "tagName")
+      .populate("createdBy", "username")
+      .lean();
+
+    const formattedQuestions = questions.map((question) => {
+      const tags = question.tagIds.map((tag) => tag.tagName);
+      // eslint-disable-next-line no-unused-vars
+      const { tagIds, ...rest } = question;
+      return { ...rest, tags };
+    });
+
+    res.json(formattedQuestions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 router.get("/getQuestion", getQuestionsByFilter);
 router.get("/getQuestionById/:qid", getQuestionById);
 router.post("/addQuestion", authenticateToken, addQuestion);
+router.get("/getAllQuestions", authenticateToken, getAllQuestions);
 
 module.exports = router;
