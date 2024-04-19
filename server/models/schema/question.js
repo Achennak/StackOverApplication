@@ -7,9 +7,9 @@ const questionSchema = mongoose.Schema(
     text: { type: String, required: true },
     tagIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag", required: true }],
     answerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Answer" }],
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     creationDate: { type: Date, default: Date.now },
-    likes: { type: Number, Default: 0 },
+    likedBy:[{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     views: { type: Number, default: 0 },
   },
 

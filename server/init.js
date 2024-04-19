@@ -4,13 +4,11 @@ const bcrypt = require("bcrypt");
 
 const { MONGO_URL } = require("./config");
 const User = require("./models/user");
-const Tag = require('./models/tags')
-const Answer = require('./models/answer')
-const Question = require('./models/question')
+const Tag = require("./models/tags");
+const Answer = require("./models/answer");
+const Question = require("./models/question");
 
-const localhost_MONGO_URL = "mongodb://localhost:27017/fake_so";
-
-mongoose.connect(localhost_MONGO_URL);
+mongoose.connect(MONGO_URL);
 
 let db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -47,11 +45,11 @@ function tagCreate(name) {
   return tag.save();
 }
 
-function answerCreate(text, userId, creationDate, likes) {
-  let answerdetail = { text: text, userId: userId };
+function answerCreate(text, userId, creationDate, likedBy) {
+  let answerdetail = { text: text, createdBy: userId };
 
   if (creationDate != false) answerdetail.creationDate = creationDate;
-  if (likes != false) answerdetail.likes = likes;
+  if (likedBy != false) answerdetail.likedBy = likedBy;
 
   let answer = new Answer(answerdetail);
   return answer.save();
@@ -62,33 +60,30 @@ function questionCreate(
   text,
   tags,
   answers,
-  userId,
+  createdBy,
   creationDate,
   views,
-  likes
+  likedBy
 ) {
   let qstndetail = {
     title: title,
     text: text,
-    userId: userId,
+    createdBy: userId,
     tagIds: tags,
   };
 
   if (answers != false) qstndetail.answerIds = answers;
   if (creationDate != false) qstndetail.creationDate = creationDate;
   if (views != false) qstndetail.views = views;
-  if (likes != false) qstndetail.likes = likes;
+  if (likedBy != false) qstndetail.likedBy = likedBy;
 
   let qstn = new Question(qstndetail);
   return qstn.save();
 }
 
-
-
 const populate = async () => {
   //creat Admin
   await createAdminUser();
-
 
   //create tags
   let t1 = await tagCreate("react");
@@ -167,7 +162,8 @@ const populate = async () => {
     [a1, a2],
     userId1,
     new Date("2022-01-20T03:00:00"),
-    10
+    10,
+    []
   );
   await questionCreate(
     "android studio save string shared preference, start activity and load the saved string",
