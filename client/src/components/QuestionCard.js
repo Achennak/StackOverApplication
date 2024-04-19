@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const QuestionCard = ({ question }) => {
-  const { id, title, text, tags } = question;
+  const { _id, title, text, tags } = question;
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/question/${id}`);
+    navigate(`/question/${_id}`);
   };
 
   return (

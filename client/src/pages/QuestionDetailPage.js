@@ -10,7 +10,7 @@ import Sidebar from "../components/sidebar";
 const QuestionDetailPage = () => {
   const { id } = useParams();
   const question = useQuestionStore((state) =>
-    state.questions.find((question) => question.id === parseInt(id))
+    state.questions.find((question) => question._id === id)
   );
   const fetchAnswers = useAnswerStore((state) => state.fetchAnswers);
   const answers = useAnswerStore((state) => state.answers);
@@ -33,7 +33,7 @@ const QuestionDetailPage = () => {
         <div className="flex-grow container py-8 m-5">
           <div className="bg-white shadow-md rounded-lg p-6">
             <h1 className="text-3xl font-bold mb-4">{question.title}</h1>
-            <p className="text-gray-700 mb-8 text-lg">{question.body}</p>
+            <p className="text-gray-700 mb-8 text-lg">{question.text}</p>
             <div className="border-t border-gray-300 pt-8">
               <h2 className="text-2xl font-bold mb-4">Answers</h2>
               <AnswerList answers={answers} questionId={id} />
