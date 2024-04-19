@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const QuestionCard = ({ question }) => {
-  const { _id, title, text, tags } = question;
+  const { _id, title, text, tagIds } = question;
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -17,12 +17,12 @@ const QuestionCard = ({ question }) => {
       <h2 className="text-xl font-bold mb-4">{title}</h2>
       <p className="text-gray-700 mb-4">{text}</p>
       <div className="flex flex-wrap">
-        {tags.map((tag) => (
+        {tagIds.map((tagId) => (
           <span
-            key={tag}
+            key={tagId._id}
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
           >
-            {tag}
+            {tagId.tagName}
           </span>
         ))}
       </div>
