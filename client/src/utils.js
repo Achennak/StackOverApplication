@@ -1,3 +1,5 @@
+import axiosInstance from "./api/axiosInstance";
+
 const validatePassword = (password) => {
   const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
   const hasNumber = /[0-9]+/.test(password);
@@ -135,4 +137,24 @@ const filterQuestions = (questions, search = "") => {
   return copyQuestion;
 };
 
-export { validatePassword, getFormattedDate, filterQuestions };
+// Maybe this should be in the questionStore
+const filterAndSortQuestions = async (order, search) => {
+  try {
+    const response = await axiosInstance.get(`/questions/getQuestion`, {
+      params: {
+        order: order,
+        search: search,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log("error calling filter & search from backend");
+  }
+};
+
+export {
+  validatePassword,
+  getFormattedDate,
+  filterQuestions,
+  filterAndSortQuestions,
+};

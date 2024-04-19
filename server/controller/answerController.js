@@ -2,7 +2,6 @@ const express = require("express");
 const Answer = require("../models/answer");
 const Question = require("../models/question");
 const authenticateToken = require("./authentication_middleware");
-const { getQuestionsByOrder } = require("../utils/question");
 
 const router = express.Router();
 
@@ -48,6 +47,24 @@ const addAnswer = async (req, res) => {
   } catch (error) {
     console.error("Error adding answer:", error);
     res.status(500).json({ error: "Failed to add answer" });
+  }
+};
+// Fetch all answers for a question
+const getAnswersForQuestion = async (req, res) => {
+  try {
+    const questionId = req.params.questionId;
+
+    // Find the question and populate its answerIds to get all answers
+    const question = await Question.findById(questionId).populate("answerIds");
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    const answers = question.answerIds;
+    res.status(200).json(answers);
+  } catch (error) {
+    console.error("Error fetching answers for question:", error);
+    res.status(500).json({ error: "Failed to fetch answers for question" });
   }
 };
 
@@ -109,12 +126,10 @@ const deleteAnswer = async (req, res) => {
     });
 
     if (!answer) {
-      return res
-        .status(404)
-        .json({
-          error:
-            "Answer not found or you are not authorized to delete this answer",
-        });
+      return res.status(404).json({
+        error:
+          "Answer not found or you are not authorized to delete this answer",
+      });
     }
 
     // Remove answer ID from the question
@@ -132,6 +147,11 @@ const deleteAnswer = async (req, res) => {
 
 router.get("/getAnswersByUserId/:userId", authenticateToken, getAnswersForUser);
 router.delete("/:answerId", authenticateToken, deleteAnswer);
+router.get(
+  "/getAnswersForQuestion/:questionId",
+  authenticateToken,
+  getAnswersForQuestion
+);
 router.put("/:answerId/dislike", authenticateToken, dislikeAnswer);
 router.put("/:answerId/like", authenticateToken, likeAnswer);
 
