@@ -1,5 +1,37 @@
 import axiosInstance from "./api/axiosInstance";
 
+const validateAskQuestion = (title, text, newTags) => {
+  const errors = [];
+
+  // Title validation
+  if (!title.trim() || title.length > 100) {
+    errors.push("Please enter a title (up to 100 characters).");
+  }
+
+  // Question text validation
+  if (!text.trim()) {
+    errors.push("Please enter question text. It can't be empty.");
+  }
+
+  // Tags validation
+  if (!newTags.trim()) {
+    errors.push("Please enter at least one tag.");
+  } else {
+    const tagArray = newTags.trim().split(/\s+/);
+    if (tagArray.length > 5) {
+      errors.push("Please enter up to 5 tags.");
+    }
+    for (const tag of tagArray) {
+      if (tag.length > 20) {
+        errors.push("Each tag should be up to 20 characters long.");
+        break;
+      }
+    }
+  }
+
+  return errors;
+};
+
 const validatePassword = (password) => {
   const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
   const hasNumber = /[0-9]+/.test(password);
@@ -153,6 +185,7 @@ const filterAndSortQuestions = async (order, search) => {
 };
 
 export {
+  validateAskQuestion,
   validatePassword,
   getFormattedDate,
   filterQuestions,
