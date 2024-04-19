@@ -20,7 +20,6 @@ const useUserStore = create((set, get) => ({
       set({ isAuthenticated: false, user: null });
     }
   },
-
   signUp: async (userData) => {
     try {
       const response = await axiosInstance.post("/user/signup", userData);
@@ -68,26 +67,22 @@ const useUserStore = create((set, get) => ({
   },
   fetchQuestionsByUserId: async (userId) => {
     try {
-      const response = await axiosInstance.get(
-        `/questions/getQuestionsByUserId/${userId}`
-      );
+      const response = await axiosInstance.get(`/questions/getQuestionsByUserId/${userId}`);
       return response.data;
     } catch (error) {
-      console.error("Error fetching questions:", error);
+      console.error('Error fetching questions:', error);
       throw error;
     }
   },
   fetchAnswersByUserId: async (userId) => {
     try {
-      const response = await axiosInstance.get(
-        `/answers/getAnswersByUserId/${userId}`
-      );
+      const response = await axiosInstance.get(`/answers/getAnswersByUserId/${userId}`);
       return response.data;
     } catch (error) {
-      console.error("Error fetching answers:", error);
+      console.error('Error fetching answers:', error);
       throw error;
     }
-  },
+  }
 }));
 
 export default useUserStore;
