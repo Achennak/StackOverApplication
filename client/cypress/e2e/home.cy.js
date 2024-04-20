@@ -24,19 +24,10 @@ describe("Home Page", () => {
     }
   });
   it("Search box is present", () => {
-    // Visit the home page
-    // cy.visit("http://localhost:3000/");
-
-    // Replace this with logic
-    const isAuthenticated = true;
-
-    if (isAuthenticated) {
-      cy.get('[data-testid="home-page-search-box"]').should("exist");
-    } else {
-      cy.get('[data-testid="home-page-search-box"]').should("not.exist");
-    }
+    cy.get('[data-testid="home-page-search-box"]').should("exist");
   });
-  //TODO: Check for question card
-  //TODO: Check if search works
+  it("Question card is present", () => {
+    cy.get('[data-testid="question-card"]').should("exist");
+  });
   //TODO: Check for onClick events
 });

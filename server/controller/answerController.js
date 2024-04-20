@@ -42,7 +42,6 @@ const addAnswer = async (req, res) => {
     if (!updatedQuestion) {
       return res.status(404).json({ error: "Question not found" });
     }
-    console.log(newAnswer);
     res.status(200).json(newAnswer);
   } catch (error) {
     console.error("Error adding answer:", error);
