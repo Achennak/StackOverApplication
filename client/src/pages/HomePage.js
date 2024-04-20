@@ -111,6 +111,7 @@ const HomePage = () => {
               <button
                 onClick={() => setShowModal(true)}
                 className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+                data-testid="ask-new-question-button"
               >
                 Ask Question
               </button>
@@ -129,6 +130,7 @@ const HomePage = () => {
                 className={`px-4 py-2 rounded-md ml-2 ${
                   order === "new" ? "bg-blue-500 text-white" : "bg-gray-200"
                 }`}
+                data-testid="new-questions-filter-button"
               >
                 New
               </button>
@@ -139,6 +141,7 @@ const HomePage = () => {
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200"
                 }`}
+                data-testid="unanswered-questions-filter-button"
               >
                 Unanswered
               </button>

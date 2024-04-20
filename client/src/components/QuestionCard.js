@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import useQuestionStore from "../store/questionStore";
+import { getFormattedDate } from "../utils";
 
 const QuestionCard = ({ question, handleTagClick, currentUser }) => {
   const {
@@ -34,7 +35,7 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
   }, [currentUser, question.likedBy]);
 
   // TODO: Use the util function instead
-  const formattedDate = new Date(creationDate).toLocaleDateString();
+  const formattedDate = getFormattedDate(new Date(creationDate));
 
   const handleLike = () => {
     if (liked) {
@@ -50,7 +51,10 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 relative">
+    <div
+      className="bg-white shadow-md rounded-lg p-6 relative"
+      data-testid="question-card"
+    >
       {currentUser.isAdmin || createdBy._id === currentUser._id ? (
         <FaTrashAlt
           className="absolute top-2 right-2 text-gray-500 cursor-pointer"
@@ -60,6 +64,7 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
       <h2
         className="text-xl font-bold mb-4 cursor-pointer"
         onClick={handleQuestionClick}
+        data-testid="question_card_title"
       >
         {title}
       </h2>
@@ -80,8 +85,9 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
           </span>
         ))}
       </div>
-      <div className="text-sm text-gray-500">
-        Asked on {formattedDate} by {createdBy.userName}
+      <div className="flex flex-col items-center text-sm text-gray-500">
+        <span>Asked by {createdBy.userName}</span>
+        <span>{formattedDate}</span>
       </div>
       <div className="flex items-center mt-4">
         <div
