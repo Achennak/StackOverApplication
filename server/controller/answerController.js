@@ -95,12 +95,13 @@ const dislikeAnswer = async (req, res) => {
   try {
     const answerId = req.params.answerId;
     const userId = req.user._id;
+    console.log(userId);
     const answer = await Answer.findById(answerId);
 
     if (!answer) {
       return res.status(404).json({ error: "Answer not found" });
     }
-
+    console.log(answer);
     const index = answer.likedBy.indexOf(userId);
     if (index > -1) {
       answer.likedBy.splice(index, 1);
@@ -130,7 +131,7 @@ const deleteAnswer = async (req, res) => {
           "Answer not found or you are not authorized to delete this answer",
       });
     }
-
+    console.log(answer)
     // Remove answer ID from the question
     await Question.updateOne(
       { _id: answer.questionId },

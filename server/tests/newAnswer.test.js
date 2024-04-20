@@ -75,7 +75,7 @@ const mockReqBody = {
     );
   });
 
-  it("should return 401 when user is not logged in", async () => {
+  it("should return error when user is not logged in", async () => {
     // Mock request body
     const mockReqBody = {
       qid: "dummyQuestionId",
@@ -119,7 +119,7 @@ const mockReqBody = {
   
 });
 
-/*describe('PUT /answers/:answerId/like', () => {
+describe('PUT /answers/:answerId/like', () => {
 
   beforeEach(() => {
     server = require("../server");
@@ -129,6 +129,12 @@ const mockReqBody = {
     server.close();
     await mongoose.disconnect()
   });
+  const authenticatedUser = { _id: 'dummyUser' };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+   req.user = authenticatedUser;
+   next();
+ });
+ const token = jwt.sign(authenticatedUser, "random_key");
 
   const mockAnswer = {
     _id: '609b057ab12a0212040d18d2',
@@ -139,16 +145,16 @@ const mockReqBody = {
   };
 
   it('should like an answer', async () => {
-   Answer.findById.mockResolvedValueOnce(mockAnswer);
+    Answer.findById.mockResolvedValueOnce(mockAnswer);
 
     const res = await supertest(server)
-    .put('/answers/609b057ab12a0212040d18d2/like')
-    .send();
+      .put('/answers/609b057ab12a0212040d18d2/like')
+      .set("Authorization", token) 
+      .send();
 
     expect(res.status).toBe(200);
     expect(mockAnswer.save).toHaveBeenCalled();
-    expect(mockAnswer.likedBy).toContain('609b057ab12a0212040d18d1');
-
+    expect(mockAnswer.likedBy).toContain('dummyUser');
   });
 
   it('should handle errors when liking an answer', async () => {
@@ -156,10 +162,155 @@ const mockReqBody = {
     Answer.findById.mockRejectedValueOnce('Mock error');
 
     const res = await supertest(server)
-    .put('/answers/609b057ab12a0212040d18d2/like')
-    .send();
+      .put('/answers/609b057ab12a0212040d18d2/like')
+      .set("Authorization", token) 
+      .send();
 
     expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: 'Failed to like answer' });
   });
-});*/
+
+  it('should return 404 when answer is not found', async () => {
+    Answer.findById.mockResolvedValueOnce(null);
+
+    const res = await supertest(server)
+      .put('/answers/609b057ab12a0212040d18d2/like')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'Answer not found' });
+  });
+});
+
+describe('PUT /answers/:answerId/dislike', () => {
+
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+  const authenticatedUser = { _id: 'dummyUser' };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+   req.user = authenticatedUser;
+   next();
+ });
+ const token = jwt.sign(authenticatedUser, "random_key");
+
+  const mockAnswer = {
+    _id: '609b057ab12a0212040d18d2',
+    text: 'This is a test answer',
+    createdBy: 'dummyUser',
+    likedBy: ['dummyUser'],
+    save: jest.fn(),
+  };
+
+  it('should dislike an answer', async () => {
+    Answer.findById.mockResolvedValueOnce(mockAnswer);
+
+    const res = await supertest(server)
+      .put('/answers/609b057ab12a0212040d18d2/dislike')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(mockAnswer.save).toHaveBeenCalled();
+    expect(mockAnswer.likedBy).not.toContain('dummyUser');
+  });
+
+  it('should handle errors when disliking an answer', async () => {
+
+    Answer.findById.mockRejectedValueOnce('Mock error');
+
+    const res = await supertest(server)
+      .put('/answers/609b057ab12a0212040d18d2/dislike')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: 'Failed to dislike answer' });
+  });
+
+  it('should return 404 when answer is not found', async () => {
+    Answer.findById.mockResolvedValueOnce(null);
+
+    const res = await supertest(server)
+      .put('/answers/609b057ab12a0212040d18d2/dislike')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'Answer not found' });
+  });
+});
+
+describe('DELETE /answers/:answerId', () => {
+
+  beforeEach(() => {
+    server = require("../server");
+  })
+
+  afterEach(async() => {
+    server.close();
+    await mongoose.disconnect()
+  });
+
+   // Mocking the authentication token
+ const authenticatedUser = { _id: 'dummyUser' };
+ authenticateToken.verifyToken = jest.fn((req, res, next) => {
+  req.user = authenticatedUser;
+  next();
+});
+
+  const mockAnswer = {
+    _id: '609b057ab12a0212040d18d2',
+    text: 'This is a test answer',
+    createdBy: '609b057ab12a0212040d18d1',
+    questionId: '609b057ab12a0212040d18d3',
+  };
+  const token = jwt.sign(authenticatedUser, "random_key");
+
+
+  it('should delete an answer', async () => {
+
+    Answer.findOneAndDelete.mockResolvedValueOnce(mockAnswer);
+    Question.updateOne = jest.fn().mockResolvedValueOnce(null);
+    const res = await supertest(server)
+      .delete('/answers/609b057ab12a0212040d18d2')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ message: 'Answer deleted successfully' });
+  });
+
+  it('should handle errors when deleting an answer', async () => {
+
+    Answer.findOneAndDelete.mockRejectedValueOnce('Mock error');
+
+    const res = await supertest(server)
+      .delete('/answers/609b057ab12a0212040d18d2')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: 'Failed to delete answer' });
+  });
+
+  it('should return 404 when answer is not found or user is not authorized', async () => {
+    Answer.findOneAndDelete.mockResolvedValueOnce(null);
+
+    const res = await supertest(server)
+      .delete('/answers/609b057ab12a0212040d18d2')
+      .set("Authorization", token) 
+      .send();
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'Answer not found or you are not authorized to delete this answer' });
+  });
+});
+
