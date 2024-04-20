@@ -12,7 +12,18 @@ const useQuestionStore = create((set, get) => ({
       console.log("api call error");
     }
   },
-  addQuestion: () => {},
+  addQuestion: async (questionData) => {
+    try {
+      const response = await axiosInstance.post(
+        "/questions/addQuestion",
+        questionData
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error adding question:", error);
+      throw error;
+    }
+  },
   likeQuestion: async (questionId, userId) => {
     try {
       const questions = get().questions;
