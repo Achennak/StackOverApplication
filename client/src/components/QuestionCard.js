@@ -46,8 +46,9 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 relative">
-      {/* TODO: Conditionally render this */}
-      <FaTrashAlt className="absolute top-2 right-2 text-gray-500 cursor-pointer" />
+      {currentUser.isAdmin || createdBy._id === currentUser._id ? (
+        <FaTrashAlt className="absolute top-2 right-2 text-gray-500 cursor-pointer" />
+      ) : null}
       <h2
         className="text-xl font-bold mb-4 cursor-pointer"
         onClick={handleQuestionClick}
