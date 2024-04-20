@@ -103,7 +103,7 @@ const ProfilePage = () => {
                         key={answer.id}
                         className="bg-white rounded-md shadow-md p-4 hover:shadow-lg cursor-pointer transition duration-300"
                       >
-                        <h3 className="text-lg font-semibold">{answer.title}</h3>
+                        <h3 className="text-lg font-semibold">{answer.text}</h3>
                       </div>
                     ))
                   ) : (
