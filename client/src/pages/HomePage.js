@@ -44,7 +44,6 @@ const HomePage = () => {
     setTextError(textError || "");
     setTagsError(tagsError || "");
 
-    // If any error exists, return without submitting
     if (titleError || textError || tagsError) {
       return;
     }
@@ -151,15 +150,15 @@ const HomePage = () => {
             title={title}
             setTitle={setTitle}
             titleError={titleError}
-            setTitleError={setTitleError} // Pass titleError as prop
+            setTitleError={setTitleError}
             text={text}
             setText={setText}
             textError={textError}
-            setTextError={setTextError} // Pass textError as prop
+            setTextError={setTextError}
             tags={newTags}
             setTags={setNewTags}
             tagsError={tagsError}
-            setTagsError={setTagsError} // Pass tagsError as prop
+            setTagsError={setTagsError}
           />
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {location.pathname === "/tags"
