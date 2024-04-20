@@ -11,6 +11,7 @@ describe("Home Page", () => {
     cy.get('[data-testId="email-input-field"]').type("test@test.com");
     cy.get('[data-testId="password-input-field').type("1234");
     cy.get("button[type=submit").click();
+    cy.wait(2000);
   });
   it("user image is present", () => {
     // Replace this with logic

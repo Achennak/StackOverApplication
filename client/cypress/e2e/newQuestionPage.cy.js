@@ -13,6 +13,7 @@ describe("New Question Page", () => {
     cy.get('[data-testId="password-input-field').type("1234");
     cy.get("button[type=submit").click();
     cy.contains("Ask Question").click();
+    cy.wait(2000);
   });
 
   it('opens the modal when "Ask Question" button is clicked', () => {
