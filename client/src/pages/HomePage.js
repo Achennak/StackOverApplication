@@ -14,6 +14,7 @@ const HomePage = () => {
   const fetchQuestions = useQuestionStore((state) => state.fetchQuestions);
   const questions = useQuestionStore((state) => state.questions);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const currentUser = useUserStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
   const fetchTags = useTagStore((state) => state.fetchTags);
   const tags = useTagStore((state) => state.tags);
@@ -115,7 +116,12 @@ const HomePage = () => {
                   />
                 ))
               : filteredQuestions.map((question) => (
-                  <QuestionCard key={question.id} question={question} />
+                  <QuestionCard
+                    key={question.id}
+                    question={question}
+                    handleTagClick={handleTagClick}
+                    currentUser={currentUser}
+                  />
                 ))}
           </div>
         </div>

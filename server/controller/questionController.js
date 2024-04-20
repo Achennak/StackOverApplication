@@ -103,7 +103,7 @@ const addQuestion = async (req, res) => {
       answerIds: answerIds,
       createdBy: userId,
       creationDate: new Date(),
-      views: 0
+      views: 0,
     });
     console.log(newQuestion);
     res.status(200).json(newQuestion);
@@ -132,6 +132,59 @@ const getAllQuestions = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// Like a question
+router.post("/like/:questionId", authenticateToken, async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const { userId } = req.body;
+
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    if (question.likedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ error: "Question already liked by this user" });
+    }
+
+    question.likedBy.push(userId);
+    await question.save();
+
+    res.status(200).json({ message: "Question liked successfully" });
+  } catch (error) {
+    console.error("Like question error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Dislike a question
+router.post("/dislike/:questionId", authenticateToken, async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const { userId } = req.body;
+
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    const userIndex = question.likedBy.indexOf(userId);
+    if (userIndex === -1) {
+      return res.status(400).json({ error: "Question not liked by this user" });
+    }
+
+    question.likedBy.splice(userIndex, 1);
+    await question.save();
+
+    res.status(200).json({ message: "Question disliked successfully" });
+  } catch (error) {
+    console.error("Dislike question error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.get("/getQuestion", getQuestionsByFilter);
 router.get("/getQuestionById/:qid", getQuestionById);
