@@ -314,3 +314,79 @@ describe('DELETE /answers/:answerId', () => {
   });
 });
 
+describe.only("GET /answers/getAnswersByUserId/:userId", () => {
+  beforeEach(() => {
+    server = require("../server");
+  });
+
+  afterEach(async () => {
+    server.close();
+    await mongoose.disconnect();
+  });
+
+  // Mocking the authentication token
+ const authenticatedUser = { _id: 'dummyUserId' };
+ authenticateToken.verifyToken = jest.fn((req, res, next) => {
+  req.user = authenticatedUser;
+  next();
+});
+
+const token = jwt.sign(authenticatedUser, "random_key");
+
+
+  it("should return answers for a specific user", async () => {
+    const userId = "dummyUserId";
+    const mockAnswers = [
+      { _id: "answer1", text: "Answer 1", createdBy: authenticatedUser },
+      { _id: "answer2", text: "Answer 2", createdBy: authenticatedUser },
+    ];
+
+    Answer.find.mockResolvedValueOnce(mockAnswers);
+
+    const response = await supertest(server)
+      .get(`/answers/getAnswersByUserId/${userId}`)
+      .set("Authorization", token)
+      .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockAnswers);
+  });
+
+  it("should return 500 when there is an error fetching answers", async () => {
+    const userId = "dummyUserId";
+
+    Answer.find.mockRejectedValueOnce("Mock error");
+
+
+    const response = await supertest(server)
+      .get(`/answers/getAnswersByUserId/${userId}`)
+      .set("Authorization", token)
+      .send();
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ message: "Internal server error" });
+  });
+
+  it("should return 403 when user is not authorized", async () => {
+    const userId = "dummyUserId";
+    const unauthorizedUserId = "unauthorizedUserId";
+
+    const mockAnswers = [
+      { _id: "answer1", text: "Answer 1", createdBy: userId },
+      { _id: "answer2", text: "Answer 2", createdBy: userId },
+    ];
+
+    Answer.find.mockResolvedValueOnce(mockAnswers);
+
+    const token = jwt.sign({ _id: unauthorizedUserId }, "random_key");
+
+    const response = await supertest(server)
+      .get(`/answers/getAnswersByUserId/${userId}`)
+      .set("Authorization", token)
+      .send();
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ message: "Unauthorized" });
+  });
+});
+
