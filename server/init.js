@@ -68,7 +68,7 @@ function questionCreate(
   let qstndetail = {
     title: title,
     text: text,
-    createdBy: userId,
+    createdBy: createdBy,
     tagIds: tags,
   };
 

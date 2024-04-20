@@ -88,7 +88,7 @@ const addQuestion = async (req, res) => {
     if (tagIds === undefined) tagIds = [];
     if (answerIds === undefined) answerIds = [];
 
-    const userId = req.user._id;
+    const userId = req.user.userId;
     // Add tags
     const rtagIds = [];
     for (const tagName of tagIds) {
