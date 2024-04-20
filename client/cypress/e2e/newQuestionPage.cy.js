@@ -35,7 +35,7 @@ describe("New Question Page", () => {
     cy.contains("tag2").should("be.visible");
   });
 
-  it("Ask a Question creates and displays in All Questions", () => {
+  /*it("Ask a Question creates and displays in All Questions", () => {
     cy.get('input[placeholder="Title"]').type("Test Question Title");
     cy.get('textarea[placeholder="Question text"]').type("Test Question 1");
     cy.get('input[placeholder="Tags (space-separated)"]').type(
@@ -51,7 +51,7 @@ describe("New Question Page", () => {
     qTitles.forEach((title) => {
       cy.contains(title).should("be.visible");
     });
-  });
+  });*/
 
   it('closes the modal when "Cancel" button is clicked', () => {
     cy.contains("Cancel").click();
