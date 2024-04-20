@@ -72,6 +72,21 @@ const useQuestionStore = create((set, get) => ({
       console.error("dislikeQuestion error:", error);
     }
   },
+  deleteQuestion: async (questionId) => {
+    try {
+      const response = await axiosInstance.delete(`/questions/${questionId}`);
+      if (response.status === 200) {
+        console.log("Question deleted successfully");
+        const updatedQuestions = get().questions.filter(
+          (question) => question._id !== questionId
+        );
+        set({ questions: updatedQuestions });
+      }
+    } catch (error) {
+      console.error("Delete question error:", error);
+      // Handle error or show a notification to the user
+    }
+  },
 }));
 
 export default useQuestionStore;

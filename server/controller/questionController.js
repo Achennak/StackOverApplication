@@ -1,5 +1,6 @@
 const express = require("express");
 const Question = require("../models/question");
+const User = require("../models/user");
 const authenticateToken = require("./authentication_middleware");
 const {
   addTag,
@@ -11,17 +12,14 @@ const router = express.Router();
 
 router.get("/getQuestionsByUserId/:userId", async (req, res) => {
   const userId = req.params.userId;
-  console.log("getQuestionsByUserId/", userId);
   try {
     const questions = await Question.find({ createdBy: userId })
       .populate("tagIds")
       .populate("createdBy")
       .exec();
-    console.log(questions);
 
     res.json(questions);
   } catch (error) {
-    console.error(error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -30,19 +28,15 @@ router.get("/getQuestionsByUserId/:userId", async (req, res) => {
 const getQuestionsByFilter = async (req, res) => {
   try {
     const { order, search } = req.query;
-    console.log(order);
-    console.log(search);
 
     // Fetch questions by order
     let orderedQuestions = await getQuestionsByOrder(order);
-    console.log("ordered questions ", orderedQuestions);
 
     // Filter questions by search
     const filteredQuestions = await filterQuestionsBySearch(
       orderedQuestions,
       search
     );
-    console.log("filtered questions ", filteredQuestions);
 
     res.json(filteredQuestions);
   } catch (error) {
@@ -58,13 +52,11 @@ const getQuestionById = async (req, res) => {
     if (qid === null) {
       return res.status(500).json({ error: "Internal server error" });
     }
-    console.log("questionid", qid);
     const question = await Question.findOneAndUpdate(
       { _id: qid },
       { $inc: { views: 1 } },
       { new: true }
     ).populate("answerIds");
-    console.log(question);
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
     }
@@ -105,7 +97,6 @@ const addQuestion = async (req, res) => {
       creationDate: new Date(),
       views: 0,
     });
-    console.log(newQuestion);
     res.status(200).json(newQuestion);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -182,6 +173,37 @@ router.post("/dislike/:questionId", authenticateToken, async (req, res) => {
     res.status(200).json({ message: "Question disliked successfully" });
   } catch (error) {
     console.error("Dislike question error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete a question
+router.delete("/:questionId", authenticateToken, async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const { userId } = req.user;
+
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(403).json({ error: "Invalid User" });
+    }
+
+    if (user._id == question.createdBy || user.isAdmin) {
+      await question.deleteOne();
+
+      res.status(200).json({ message: "Question deleted successfully" });
+    } else {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to delete this question" });
+    }
+  } catch (error) {
+    console.error("Delete question error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

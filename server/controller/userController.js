@@ -52,7 +52,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -60,7 +59,6 @@ router.post("/login", async (req, res) => {
     console.log(`LOGIN: email is ${email} and password is: ${password}`);
     // Check if user exists
     const user = await User.findOne({ email });
-    console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }

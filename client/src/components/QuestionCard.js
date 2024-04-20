@@ -17,6 +17,7 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
   const navigate = useNavigate();
   const likeQuestion = useQuestionStore((state) => state.likeQuestion);
   const dislikeQuestion = useQuestionStore((state) => state.dislikeQuestion);
+  const deleteQuestion = useQuestionStore((state) => state.deleteQuestion);
 
   const [liked, setLiked] = useState(false);
 
@@ -44,10 +45,17 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
     setLiked(!liked);
   };
 
+  const handleQuestionDelete = () => {
+    deleteQuestion(_id);
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6 relative">
       {currentUser.isAdmin || createdBy._id === currentUser._id ? (
-        <FaTrashAlt className="absolute top-2 right-2 text-gray-500 cursor-pointer" />
+        <FaTrashAlt
+          className="absolute top-2 right-2 text-gray-500 cursor-pointer"
+          onClick={() => handleQuestionDelete()}
+        />
       ) : null}
       <h2
         className="text-xl font-bold mb-4 cursor-pointer"
