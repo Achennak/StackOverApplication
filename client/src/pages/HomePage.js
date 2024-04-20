@@ -144,46 +144,52 @@ const HomePage = () => {
               </button>
             </div>
           </div>
-          <NewQuestionPage
-            showModal={showModal}
-            setShowModal={setShowModal}
-            handleSubmit={handleSubmit}
-            title={title}
-            setTitle={setTitle}
-            titleError={titleError}
-            setTitleError={setTitleError}
-            text={text}
-            setText={setText}
-            textError={textError}
-            setTextError={setTextError}
-            tags={newTags}
-            setTags={setNewTags}
-            tagsError={tagsError}
-            setTagsError={setTagsError}
-          />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {location.pathname === "/tags"
-              ? tags.map((tag, index) => (
-                  <TagCard
-                    key={index}
-                    tagName={tag.tagName}
-                    numQuestions={
-                      questions.filter((q) =>
-                        q.tagIds.some((tagId) => tagId.tagName === tag.tagName)
-                      ).length
-                    }
-                    handleTagClick={handleTagClick}
-                  />
-                ))
-              : filteredQuestions.map((question) => (
-                  <QuestionCard
-                    key={question._id}
-                    question={question}
-                    handleTagClick={handleTagClick}
-                    currentUser={currentUser}
-                  />
-                ))}
-          </div>
+          {showModal && (
+            <NewQuestionPage
+              showModal={showModal}
+              setShowModal={setShowModal}
+              handleSubmit={handleSubmit}
+              title={title}
+              setTitle={setTitle}
+              titleError={titleError}
+              setTitleError={setTitleError}
+              text={text}
+              setText={setText}
+              textError={textError}
+              setTextError={setTextError}
+              tags={newTags}
+              setTags={setNewTags}
+              tagsError={tagsError}
+              setTagsError={setTagsError}
+            />
+          )}
+          {!showModal && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {location.pathname === "/tags"
+                ? tags.map((tag, index) => (
+                    <TagCard
+                      key={index}
+                      tagName={tag.tagName}
+                      numQuestions={
+                        questions.filter((q) =>
+                          q.tagIds.some(
+                            (tagId) => tagId.tagName === tag.tagName
+                          )
+                        ).length
+                      }
+                      handleTagClick={handleTagClick}
+                    />
+                  ))
+                : filteredQuestions.map((question) => (
+                    <QuestionCard
+                      key={question._id}
+                      question={question}
+                      handleTagClick={handleTagClick}
+                      currentUser={currentUser}
+                    />
+                  ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
