@@ -57,7 +57,7 @@ jobs:
       - name: Generate Jest coverage report
         run: |
           cd server
-          npm test --coverage
+          npx jest --coverage --coverageDirectory=coverage
 
       - name: Upload Jest coverage report
         uses: actions/upload-artifact@v2

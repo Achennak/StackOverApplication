@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../store/userStore";
+import { FaUserCircle } from "react-icons/fa";
 
 const TopBar = () => {
   const user = useUserStore((state) => state.user);
@@ -27,10 +28,8 @@ const TopBar = () => {
         {user && (
           <div className="relative">
             <button onClick={handleUserClick}>
-              <img
-                src={user.avatar}
-                alt="User Avatar"
-                className="w-10 h-10 rounded-full"
+              <FaUserCircle
+                className="w-10 h-10 text-gray-500"
                 data-testid="user-img"
               />
             </button>
