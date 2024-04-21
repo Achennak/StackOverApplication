@@ -33,7 +33,7 @@ const HomePage = () => {
   const [textError, setTextError] = useState("");
   const [tagsError, setTagsError] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newQuestionErrors = validateAskQuestion(title, text, newTags);
     const titleError = newQuestionErrors.find((error) =>
       error.includes("title")
@@ -49,7 +49,7 @@ const HomePage = () => {
       return;
     }
 
-    addQuestion({ title, text, tagIds: newTags.trim().split(/\s+/) });
+    await addQuestion({ title, text, tagIds: newTags.trim().split(/\s+/) });
 
     setTitle("");
     setText("");

@@ -23,7 +23,6 @@ const QuestionDetailPage = () => {
   const dislikeQuestion = useQuestionStore((state) => state.dislikeQuestion);
   const deleteQuestion = useQuestionStore((state) => state.deleteQuestion);
   const navigate = useNavigate();
-  const formattedDate = getFormattedDate(new Date(question.creationDate));
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
@@ -38,6 +37,8 @@ const QuestionDetailPage = () => {
       <div className="text-center text-2xl font-bold">Question Not Found</div>
     );
   }
+
+  const formattedDate = getFormattedDate(new Date(question.creationDate));
 
   useEffect(() => {
     if (currentUser && question.likedBy.includes(currentUser._id)) {
