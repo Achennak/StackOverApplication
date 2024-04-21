@@ -21,4 +21,11 @@ All the features you have implemented.
 
 ## Instructions to generate and view coverage report
 
+For jest Coverage:(server and client should be stopped before running this command)
+1.cd server 
+2.Run npx jest --collectCoverage
+
+For cypress Coverage:(server, client and localhost mongodb should be up and running before running this command)
+1.go to client - cd client
+2.Run npx cypress run --headless --browser chrome --spec "cypress/e2e/*.js" --env coverage=true
 ## Extra Credit Section (if applicable)
