@@ -9,7 +9,7 @@ import { FaTrashAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { getFormattedDate } from "../utils";
 import TopBar from "../components/topbar";
 import Sidebar from "../components/sidebar";
-import NewAnswerPage from "./newAnswerPage";
+import NewAnswerPage from "./NewAnswerPage";
 import { validateAskAnswer } from "../utils";
 
 const QuestionDetailPage = () => {
