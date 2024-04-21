@@ -43,7 +43,7 @@ describe("Post Moderation", () => {
     cy.visit("http://localhost:3000/signup");
     cy.get('[data-testid="username-input-field"]').type("regular_user");
     cy.get('[data-testid="email-input-field"]').type("regular_user@test.com");
-    cy.get('[data-testid="password-input-field"]').type('r9FYl5L*S28xs"K'); // 7 characters
+    cy.get('[data-testid="password-input-field"]').type('r9FYl5L*S28xs"K');
     cy.get("button[type=submit]").click();
 
     cy.wait(2000);
