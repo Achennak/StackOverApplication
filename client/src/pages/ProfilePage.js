@@ -9,12 +9,17 @@ const QuestionCard = ({ question }) => {
   const navigate = useNavigate();
   return (
     <div
-      className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px]"
+      className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px] cursor-pointer"
       onClick={() => {
         navigate(`/question/${question._id}`);
       }}
     >
-      <h3 className="text-lg font-semibold mb-2">{question.title}</h3>
+      <h3
+        className="text-lg font-semibold mb-2"
+        data-testid="profile-page-question-title"
+      >
+        {question.title}
+      </h3>
       <p className="text-gray-600">{question.text}</p>
     </div>
   );
@@ -23,15 +28,9 @@ const QuestionCard = ({ question }) => {
 const AnswerCard = ({ answer }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px]">
-      <p className="text-gray-600 mb-2">{answer.text}</p>
-      <div className="flex items-center">
-        {/* <img
-          src={answer.user.avatarUrl}
-          alt={answer.user.name}
-          className="w-8 h-8 rounded-full mr-2"
-        /> */}
-        <span className="text-sm font-semibold">Test</span>
-      </div>
+      <p className="text-gray-600 mb-2" data-testid="profile-page-answer-title">
+        {answer.text}
+      </p>
     </div>
   );
 };
@@ -115,7 +114,9 @@ const ProfilePage = () => {
                       <QuestionCard key={question._id} question={question} />
                     ))
                   ) : (
-                    <p>No questions by this user.</p>
+                    <p data-testid="profile-page-no-questions-text">
+                      No questions by this user.
+                    </p>
                   )}
                 </div>
               </div>
@@ -127,7 +128,9 @@ const ProfilePage = () => {
                       <AnswerCard key={answer._id} answer={answer} />
                     ))
                   ) : (
-                    <p>No answers by this user.</p>
+                    <p data-testid="profile-page-no-answers-text">
+                      No answers by this user.
+                    </p>
                   )}
                 </div>
               </div>

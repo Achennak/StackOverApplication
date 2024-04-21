@@ -16,6 +16,8 @@ All the features you have implemented.
 | Voting on Posts           | Vote on post              | client/cypress/e2e/votingOnPosts.cy.js        | path/to/test    | path/to/test |
 | Tagging Posts             | Tag & Use tags            | client/cypress/e2e/taggingPosts.cy.js         | path/to/test    | path/to/test |
 | Post Moderation           | Moderate posts            | client/cypress/e2e/postModeration.cy.js       | path/to/test    | path/to/test |
+| Create Answer             | Answer questions          | client/cypress/e2e/createNewAnswer.cy.js      | path/to/test    | path/to/test |
+| Profile page              | Profile page for user     | client/cypress/e2e/profilePage.cy.js          | path/to/test    | path/to/test |
 
 . . .
 

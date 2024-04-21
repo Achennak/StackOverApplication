@@ -1,45 +1,100 @@
-// describe('Profile Page', () => {
-//     beforeEach(() => {
-//         // Login before each test
-//         cy.visit("http://localhost:3000/login");
-//         cy.get('[data-testId="email-input-field"]').type("user2@example.com");
-//         cy.get('[data-testId="password-input-field"]').type("password456");
-//         cy.get("button[type=submit]").click();
+describe("Profile page tests", () => {
+  beforeEach(() => {
+    cy.exec("node ../server/init.js mongodb://127.0.0.1:27017/fake_so");
+  });
 
-//         // After login, navigate to profile page
-//         cy.get('[data-testid="user-img"]').click();
-//         cy.contains('Visit Profile').click();
-//         cy.url().should('include', '/profile');
-//       });
+  afterEach(() => {
+    cy.exec("node ../server/destroy.js mongodb://127.0.0.1:27017/fake_so");
+  });
+  beforeEach(() => {
+    cy.visit("http://localhost:3000/login");
+    cy.get('[data-testId="email-input-field"]').type("test@test.com");
+    cy.get('[data-testId="password-input-field').type("1234");
+    cy.get("button[type=submit").click();
+    cy.wait(2000);
+  });
+  it("Check user has no question or answer", () => {
+    // visit /profile
+    cy.get('[data-testid="user-img"]').click();
+    cy.get('[data-testid="topbar-visit-profile-button"]').click();
 
-//       it('should display user data correctly', () => {
-//         cy.get('.text-xl').should('contain', 'user2');
-//         cy.get('.text-gray-500').should('contain', 'user2@example.com');
-//         cy.contains('.text-gray-500', 'Member since').should('exist');
+    //confirm no questions or users
+    cy.get('[data-testid="profile-page-no-questions-text"]').should("exist");
+    cy.get('[data-testid="profile-page-no-answers-text"]').should("exist");
+  });
+  it("Create question and verify it shows up", () => {
+    //Create new question
+    cy.get('[data-testid="ask-new-question-button"]').click();
 
-//       });
+    cy.get('[data-testid="new-question-modal-title"]').type("Test Title");
 
-//       it('should switch between tabs', () => {
-//         cy.contains('button', 'Answers').click();
-//         cy.get('.bg-blue-500').should('contain', 'Answers');
-//         // Click on the Questions tab
-//         cy.contains('button', 'Questions').click();
-//         cy.get('.bg-blue-500').should('contain', 'Questions');
-//       });
+    cy.get('[data-testid="new-question-modal-text"]').type("Test Text");
 
-//       it('should display user questions and answers', () => {
-//         // Click on the Questions tab
-//         cy.contains('button', 'Questions').click();
-//         // Ensure user questions are displayed
-//         cy.get('.grid').find('.rounded-lg').should('have.length.gt', 0);
+    cy.get('[data-testid="new-question-modal-tags"]').type("react express");
 
-//         // Click on the Answers tab
-//         cy.contains('button', 'Answers').click();
-//         // Ensure user answers are displayed
-//         cy.get('.grid').find('.rounded-lg').should('have.length.gt', 0);
-//       });
+    cy.get('[data-testid="new-question-modal-submit-button"]').click();
 
-//       it('should display user avatar', () => {
-//         cy.get('img[alt="Profile"]').should('be.visible');
-//       });
-//   });
+    //wait
+    cy.wait(2000);
+
+    // visit /profile
+    cy.get('[data-testid="user-img"]').click();
+    cy.get('[data-testid="topbar-visit-profile-button"]').click();
+
+    //verify question exists
+    cy.get('[data-testid="profile-page-question-title"]').should("exist");
+  });
+  it("Create answer and verify it shows up", () => {
+    // Click on first question
+    cy.get('[data-testid="question_card_title"]').first().click();
+
+    cy.wait(1000);
+
+    //click on add answer button
+    cy.get('[data-testid="question-detail-page-add-answer-button"]').click();
+
+    //type something
+    cy.get('[data-testid="new-answer-modal-text"]').type("Test Answer");
+
+    //submit answer
+    cy.get('[data-testid="new-answer-modal-submit-button"]').click();
+
+    cy.wait(2000);
+
+    // visit /profile
+    cy.get('[data-testid="user-img"]').click();
+    cy.get('[data-testid="topbar-visit-profile-button"]').click();
+
+    //verify answer exists
+    cy.get('[data-testid="profile-page-answer-title"]').should("exist");
+  });
+  it("Create question and test onClick", () => {
+    //Create new question
+    cy.get('[data-testid="ask-new-question-button"]').click();
+
+    cy.get('[data-testid="new-question-modal-title"]').type("Test Title");
+
+    cy.get('[data-testid="new-question-modal-text"]').type("Test Text");
+
+    cy.get('[data-testid="new-question-modal-tags"]').type("react express");
+
+    cy.get('[data-testid="new-question-modal-submit-button"]').click();
+
+    //wait
+    cy.wait(2000);
+
+    // visit /profile
+    cy.get('[data-testid="user-img"]').click();
+    cy.get('[data-testid="topbar-visit-profile-button"]').click();
+
+    //verify question exists
+    cy.get('[data-testid="profile-page-question-title"]').click();
+
+    cy.wait(2000);
+
+    //confirm we are on question detail page
+    cy.get('[data-testid="question-detail-page-question-title"]').should(
+      "exist"
+    );
+  });
+});

@@ -21,7 +21,12 @@ const AnswerList = ({ answers }) => {
             key={answer._id}
             className="bg-white p-4 mb-4 rounded-lg shadow-sm"
           >
-            <p className="text-gray-800 mb-4 text-lg">{answer.text}</p>
+            <p
+              className="text-gray-800 mb-4 text-lg"
+              data-testid="answerList-answer-text"
+            >
+              {answer.text}
+            </p>
             <div className="flex items-center">
               <button
                 className="px-3 py-2 bg-green-500 text-white rounded-md mr-2"
