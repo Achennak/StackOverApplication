@@ -54,5 +54,4 @@ describe("Sign up page", () => {
       "be.visible"
     );
   });
-  // TODO: Valid Flow
 });
