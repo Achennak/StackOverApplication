@@ -21,7 +21,7 @@ describe("GET /user/details/:userId", () => {
     // Mock user data
     const mockUser = {
       _id: "validUserId",
-      username: "testuser",
+      userName: "testuser",
       email: "test@example.com",
       password: "hashedPassword",
     };
@@ -60,7 +60,7 @@ describe("POST /user/signup", () => {
 
   it("should signup a new user", async () => {
     const userData = {
-      username: "testuser",
+      userName: "testuser",
       email: "test@example.com",
       password: "password123",
     };
@@ -77,7 +77,7 @@ describe("POST /user/signup", () => {
     User.findOne.mockResolvedValueOnce([{ email: "existing@example.com" }]);
 
     const userData = {
-      username: "existinguser",
+      userName: "existinguser",
       email: "existing@example.com",
       password: "password123",
     };
@@ -105,7 +105,7 @@ describe("POST /user/login", () => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const mockUser = {
-      username: "testuser",
+      userName: "testuser",
       email: "test@example.com",
       password: hashedPassword,
       isAdmin: false,
@@ -128,7 +128,7 @@ describe("POST /user/login", () => {
 
   it("should return 401 with invalid password", async () => {
     const user = new User({
-      username: "testuser",
+      userName: "testuser",
       email: "test@example.com",
       password: "password123",
     });

@@ -17,6 +17,7 @@ const HomePage = () => {
   const addQuestion = useQuestionStore((state) => state.addQuestion);
   const questions = useQuestionStore((state) => state.questions);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const currentUser = useUserStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
   const fetchTags = useTagStore((state) => state.fetchTags);
   const tags = useTagStore((state) => state.tags);
@@ -110,6 +111,7 @@ const HomePage = () => {
               <button
                 onClick={() => setShowModal(true)}
                 className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+                data-testid="ask-new-question-button"
               >
                 Ask Question
               </button>
@@ -128,6 +130,7 @@ const HomePage = () => {
                 className={`px-4 py-2 rounded-md ml-2 ${
                   order === "new" ? "bg-blue-500 text-white" : "bg-gray-200"
                 }`}
+                data-testid="new-questions-filter-button"
               >
                 New
               </button>
@@ -138,46 +141,58 @@ const HomePage = () => {
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200"
                 }`}
+                data-testid="unanswered-questions-filter-button"
               >
                 Unanswered
               </button>
             </div>
           </div>
-          <NewQuestionPage
-            showModal={showModal}
-            setShowModal={setShowModal}
-            handleSubmit={handleSubmit}
-            title={title}
-            setTitle={setTitle}
-            titleError={titleError}
-            setTitleError={setTitleError}
-            text={text}
-            setText={setText}
-            textError={textError}
-            setTextError={setTextError}
-            tags={newTags}
-            setTags={setNewTags}
-            tagsError={tagsError}
-            setTagsError={setTagsError}
-          />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {location.pathname === "/tags"
-              ? tags.map((tag, index) => (
-                  <TagCard
-                    key={index}
-                    tagName={tag.tagName}
-                    numQuestions={
-                      questions.filter((q) =>
-                        q.tagIds.some((tagId) => tagId.tagName === tag.tagName)
-                      ).length
-                    }
-                    handleTagClick={handleTagClick}
-                  />
-                ))
-              : filteredQuestions.map((question) => (
-                  <QuestionCard key={question._id} question={question} />
-                ))}
-          </div>
+          {showModal && (
+            <NewQuestionPage
+              showModal={showModal}
+              setShowModal={setShowModal}
+              handleSubmit={handleSubmit}
+              title={title}
+              setTitle={setTitle}
+              titleError={titleError}
+              setTitleError={setTitleError}
+              text={text}
+              setText={setText}
+              textError={textError}
+              setTextError={setTextError}
+              tags={newTags}
+              setTags={setNewTags}
+              tagsError={tagsError}
+              setTagsError={setTagsError}
+            />
+          )}
+          {!showModal && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {location.pathname === "/tags"
+                ? tags.map((tag, index) => (
+                    <TagCard
+                      key={index}
+                      tagName={tag.tagName}
+                      numQuestions={
+                        questions.filter((q) =>
+                          q.tagIds.some(
+                            (tagId) => tagId.tagName === tag.tagName
+                          )
+                        ).length
+                      }
+                      handleTagClick={handleTagClick}
+                    />
+                  ))
+                : filteredQuestions.map((question) => (
+                    <QuestionCard
+                      key={question._id}
+                      question={question}
+                      handleTagClick={handleTagClick}
+                      currentUser={currentUser}
+                    />
+                  ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
