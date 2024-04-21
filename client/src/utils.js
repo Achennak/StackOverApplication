@@ -1,5 +1,14 @@
 import axiosInstance from "./api/axiosInstance";
 
+const validateAskAnswer = (text) => {
+  let error = "";
+  // Answer text validation
+  if (!text.trim()) {
+    error="Please enter your answer. It can't be empty.";
+  }
+  return error;
+};
+
 const validateAskQuestion = (title, text, newTags) => {
   const errors = [];
 
@@ -185,6 +194,7 @@ const filterAndSortQuestions = async (order, search) => {
 };
 
 export {
+  validateAskAnswer,
   validateAskQuestion,
   validatePassword,
   getFormattedDate,
