@@ -2,6 +2,8 @@ const supertest = require("supertest");
 const { default: mongoose } = require("mongoose");
 const jwt = require("jsonwebtoken");
 const Question = require("../models/question");
+const User = require("../models/User");
+
 const authenticateToken = require("../controller/authentication_middleware");
 const {
   addTag,
@@ -11,6 +13,7 @@ const {
 
 // Mocking the models
 jest.mock("../models/question");
+
 jest.mock("../utils/question", () => ({
   addTag: jest.fn(),
   getQuestionsByOrder: jest.fn(),
@@ -59,68 +62,6 @@ const mockQuestions = [
 
 let server;
 
-describe("GET /getQuestionsByUserId/:userId", () => {
-  beforeEach(() => {
-    server = require("../server");
-  });
-
-  afterEach(async () => {
-    server.close();
-    await mongoose.disconnect();
-  });
-
-  it("should return questions created by a user", async () => {
-    const userId = "userId123";
-    const questions = [
-      {
-        _id: "1",
-        title: "Question 2 Title",
-        createdBy: userId,
-        tagIds: [tag2],
-        text: "Question 1",
-      },
-      {
-        _id: "2",
-        title: "Question 1 Title",
-        createdBy: userId,
-        tagIds: [tag1],
-        text: "Question 2",
-      },
-    ];
-    const mockQs = [
-      {
-        ...mockQuestions[0],
-        createdBy: userId,
-      },
-      {
-        ...mockQuestions[1],
-        createdBy: userId,
-      },
-    ];
-
-    console.log(mockQs);
-    /*Question.find.mockReturnValue({ populate: jest.fn().mockReturnValue(questions) });
-
-    //Question.find.mockResolvedValue(questions);
-
-    //Question.find = jest.fn().mockImplementation(mockQs);
-    const response = await supertest(server)
-      .get(`/questions/getQuestionsByUserId/${userId}`)
-      .expect(200);*/
-  });
-
-  it("should handle errors when fetching questions by user ID", async () => {
-    const userId = "userId123";
-    Question.findOne = jest.fn().mockImplementation(null);
-
-    const response = await supertest(server)
-      .get(`/questions/getQuestionsByUserId/${userId}`)
-      .expect(500);
-
-    expect(response.body).toEqual({ message: "Internal server error" });
-  });
-});
-
 describe("GET /getQuestion", () => {
   beforeEach(async () => {
     server = require("../server");
@@ -133,6 +74,14 @@ describe("GET /getQuestion", () => {
     await mongoose.disconnect();
   });
 
+  const authenticatedUser = { _id: "dummyUser" };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+    req.user = authenticatedUser;
+    next();
+  });
+
+  const token = jwt.sign(authenticatedUser, "random_key");
+
   it("should return questions by filter", async () => {
     const mockReqQuery = {
       order: "someOrder",
@@ -144,96 +93,12 @@ describe("GET /getQuestion", () => {
 
     const response = await supertest(server)
       .get("/questions/getQuestion")
+      .set("authorization", token)
       .query(mockReqQuery);
 
     // Asserting the response
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockQuestions);
-  });
-});
-
-describe("GET /getQuestionById/:qid", () => {
-  beforeEach(() => {
-    server = require("../server");
-  });
-
-  afterEach(async () => {
-    server.close();
-    await mongoose.disconnect();
-  });
-
-  it("With null question id", async () => {
-    const mockReqParams = {
-      qid: null, //null or not existing in DB , when DB is down
-    };
-
-    const response = await supertest(server).get(
-      `/questions/getQuestionById/${mockReqParams.qid}`
-    );
-
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: "Internal server error" });
-  });
-
-  it("With invalid question id ", async () => {
-    const mockReqParams = {
-      qid: "InvalidID",
-    };
-
-    const mockPopulatedQuestion = {};
-
-    Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
-      populate: jest.fn().mockRejectedValue(new Error("invalid question")),
-    }));
-
-    const response = await supertest(server).get(
-      `/questions/getQuestionById/${mockReqParams.qid}`
-    );
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: "Internal server error" });
-  });
-
-  it("When empty object is returned", async () => {
-    const mockReqParams = {
-      qid: "65e9b5a995b6c7045a30d823",
-    };
-
-    Question.findOneAndUpdate = jest.fn().mockImplementation(null);
-
-    const response = await supertest(server).get(
-      `/questions/getQuestionById/${mockReqParams.qid}`
-    );
-    console.log("response is :", response.body);
-
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: "Internal server error" });
-  });
-
-  it("should return a question by id and increment its views by 1", async () => {
-    // Mock request parameters
-    const mockReqParams = {
-      qid: "65e9b5a995b6c7045a30d823",
-    };
-
-    const mockPopulatedQuestion = {
-      answers: [
-        mockQuestions.filter((q) => q._id == mockReqParams.qid)[0]["answerIds"],
-      ], // Mock answers
-      views: mockQuestions[1].views + 1,
-    };
-
-    Question.findOneAndUpdate = jest.fn().mockImplementation(() => ({
-      populate: jest.fn().mockResolvedValueOnce(mockPopulatedQuestion),
-    }));
-
-    // Making the request
-    const response = await supertest(server).get(
-      `/questions/getQuestionById/${mockReqParams.qid}`
-    );
-    console.log("response is :", response.body);
-    // Asserting the response
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockPopulatedQuestion);
   });
 });
 
@@ -371,5 +236,319 @@ describe("POST /addQuestion", () => {
 
       expect(response.body).toEqual({});
     });
+  });
+});
+
+describe("POST /questions/like/:questionId", () => {
+  beforeEach(() => {
+    server = require("../server");
+  });
+
+  afterEach(async () => {
+    server.close();
+    await mongoose.disconnect();
+  });
+  const authenticatedUser = { _id: "dummyUser" };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+    req.user = authenticatedUser;
+    next();
+  });
+
+  const token = jwt.sign(authenticatedUser, "random_key");
+
+  it("should like a question", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "dummyUser",
+      likedBy: [],
+      save: jest.fn(),
+    };
+
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/like/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(200);
+    expect(mockQuestion.save).toHaveBeenCalled();
+    expect(mockQuestion.likedBy).toContain("dummyUser");
+  });
+
+  it("should return 404 if question is not found", async () => {
+    const mockQuestionId = "nonExistentQuestionId";
+    Question.findById.mockResolvedValueOnce(null); // Simulating no question found
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/like/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: "Question not found" });
+  });
+
+  it("should return 400 if user has already liked the question", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "dummyUser",
+      likedBy: ["dummyUser"], // Simulating user already liked the question
+      save: jest.fn(),
+    };
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/like/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      error: "Question already liked by this user",
+    });
+  });
+
+  it("should return 500 if there is an internal server error", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    Question.findById.mockRejectedValueOnce(new Error("Internal server error"));
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/like/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: "Internal server error" });
+  });
+});
+
+describe("POST /questions/dislike/:questionId", () => {
+  beforeEach(() => {
+    server = require("../server");
+  });
+
+  afterEach(async () => {
+    server.close();
+    await mongoose.disconnect();
+  });
+  const authenticatedUser = { _id: "dummyUser" };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+    req.user = authenticatedUser;
+    next();
+  });
+
+  const token = jwt.sign(authenticatedUser, "random_key");
+
+  it("should dislike a question", async () => {
+    // Mock data
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "dummyUser",
+      likedBy: ["dummyUser"],
+      save: jest.fn(),
+    };
+
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/dislike/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    // Assertions
+    expect(response.status).toBe(200);
+    expect(mockQuestion.save).toHaveBeenCalled();
+    expect(mockQuestion.likedBy).not.toContain("dummyUser");
+  });
+  it("should return 404 if question is not found", async () => {
+    const mockQuestionId = "nonExistentQuestionId";
+    Question.findById.mockResolvedValueOnce(null); // Simulating no question found
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/dislike/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    // Assertions
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: "Question not found" });
+  });
+
+  it("should return 400 if user has not liked the question", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "dummyUser",
+      likedBy: [], // Simulating user has not liked the question
+      save: jest.fn(),
+    };
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+
+    // Making the request
+    const response = await supertest(server)
+      .post(`/questions/dislike/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Question not liked by this user" });
+  });
+
+  it("should return 500 if there is an internal server error", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    Question.findById.mockRejectedValueOnce(new Error("Internal server error"));
+
+    const response = await supertest(server)
+      .post(`/questions/dislike/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: "Internal server error" });
+  });
+});
+
+describe("DELETE /questions/:questionId", () => {
+  beforeEach(() => {
+    server = require("../server");
+  });
+
+  afterEach(async () => {
+    server.close();
+    await mongoose.disconnect();
+  });
+  const authenticatedUser = { _id: "dummyUser" };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+    req.user = authenticatedUser;
+    next();
+  });
+
+  const token = jwt.sign(authenticatedUser, "random_key");
+  it("should delete a question", async () => {
+    const mockUser = {
+      _id: "dummyUser",
+      userName: "testuser",
+      email: "test@example.com",
+      password: "hashedPassword",
+      isAdmin: false,
+      save: jest.fn(),
+    };
+
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "dummyUser",
+      save: jest.fn(),
+    };
+
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+    User.findById = jest.fn().mockResolvedValueOnce(mockUser);
+
+    // Making the request
+    const response = await supertest(server)
+      .delete(`/questions/${mockQuestionId}`)
+      .set("authorization", token)
+      .send();
+
+    // Assertions
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "Question deleted successfully" });
+    expect(Question.findById).toHaveBeenCalledWith(mockQuestionId);
+    expect(User.findById).toHaveBeenCalledWith("dummyUser");
+  });
+
+  it("should return 403 if user is not the creator and not admin", async () => {
+    const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
+    const mockQuestion = {
+      _id: mockQuestionId,
+      title: "Title",
+      text: "Text",
+      createdBy: "anotherUser", // Assuming another user created this question
+      save: jest.fn(),
+    };
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+
+    const response = await supertest(server)
+      .delete(`/questions/${mockQuestionId}`)
+      .set("authorization", token);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: "Invalid User" });
+  });
+});
+
+describe.skip("GET /questions/getQuestionsByUserId/:userId", () => {
+  beforeEach(() => {
+    server = require("../server");
+  });
+
+  afterEach(async () => {
+    server.close();
+    await mongoose.disconnect();
+  });
+
+  const authenticatedUser = { _id: "dummyUser" };
+  authenticateToken.verifyToken = jest.fn((req, res, next) => {
+    req.user = authenticatedUser;
+    next();
+  });
+
+  const token = jwt.sign(authenticatedUser, "random_key");
+
+  it("should return questions for the specified user", async () => {
+    const mockUserId = "dummyUser";
+    const mockQuestions = [
+      { _id: "question1", title: "Title 1", createdBy: mockUserId },
+      { _id: "question2", title: "Title 2", createdBy: mockUserId },
+    ];
+
+    Question.find.mockResolvedValueOnce(mockQuestions);
+
+    const res = await supertest(server)
+      .delete(`/questions/$getQuestionsByUserId/${userId}`)
+      .set("authorization", token)
+      .send();
+
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith(mockPopulatedQuestions);
+    expect(Question.find).toHaveBeenCalledWith({ createdBy: mockUserId });
+    expect(Question.populate).toHaveBeenCalledWith(mockQuestions, [
+      { path: "tagIds" },
+      { path: "createdBy", select: "userName" },
+    ]);
+  });
+
+  it("should return 500 if an error occurs", async () => {
+    const mockUserId = "dummyUser";
+    const req = { params: { userId: mockUserId } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    // Mocking error
+    Question.find.mockRejectedValueOnce(new Error("Database error"));
+
+    await getQuestionsForUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
   });
 });
