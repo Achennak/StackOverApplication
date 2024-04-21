@@ -58,6 +58,7 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
         <FaTrashAlt
           className="absolute top-2 right-2 text-gray-500 cursor-pointer"
           onClick={() => handleQuestionDelete()}
+          data-testid="question-card-delete-question-button"
         />
       ) : null}
       <h2

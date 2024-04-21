@@ -8,10 +8,14 @@ Login with your Northeastern credentials and read the project description [here]
 
 All the features you have implemented.
 
-| Feature                   | Description        | E2E Tests                                     | Component Tests | Jest Tests   |
-| ------------------------- | ------------------ | --------------------------------------------- | --------------- | ------------ |
-| Search & filter questions | -                  | client/cypress/e2e/searchAndFilterPosts.cy.js | path/to/test    | path/to/test |
-| Feature 2                 | This is feature 2. | /path/to/test                                 | path/to/test    | path/to/test |
+| Feature                   | Description               | E2E Tests                                     | Component Tests | Jest Tests   |
+| ------------------------- | ------------------------- | --------------------------------------------- | --------------- | ------------ |
+| Search & filter questions | Search & filter questions | client/cypress/e2e/searchAndFilterPosts.cy.js | path/to/test    | path/to/test |
+| View Post                 | View & interact with Post | client/cypress/e2e/viewQuestion.cy.js         | path/to/test    | path/to/test |
+| Create Post               | Create Post               | client/cypress/e2e/newQuestionPage.cy.js      | path/to/test    | path/to/test |
+| Voting on Posts           | Vote on post              | client/cypress/e2e/votingOnPosts.cy.js        | path/to/test    | path/to/test |
+| Tagging Posts             | Tag & Use tags            | client/cypress/e2e/taggingPosts.cy.js         | path/to/test    | path/to/test |
+| Post Moderation           | Moderate posts            | client/cypress/e2e/postModeration.cy.js       | path/to/test    | path/to/test |
 
 . . .
 
