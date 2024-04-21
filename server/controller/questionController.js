@@ -12,12 +12,12 @@ const router = express.Router();
 
 const getQuestionsForUser = async (req, res) => {
   const userId = req.params.userId;
+  console.log(userId);
   try {
     const questions = await Question.find({ createdBy: userId })
-      .populate("tagIds")
       .populate("createdBy")
       .exec();
-
+    console.log(questions);
     res.json(questions);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -84,8 +84,7 @@ const addQuestion = async (req, res) => {
 const likeQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const userId = req.user._id;
-
+    const { userId } = req.body;
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
@@ -111,8 +110,7 @@ const likeQuestion = async (req, res) => {
 const dislikeQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const userId = req.user._id;
-
+    const { userId } = req.body;
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
@@ -137,25 +135,19 @@ const dislikeQuestion = async (req, res) => {
 const deleteQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const userId = req.user._id;
-
+    const userId = req.user.userId;
     const question = await Question.findById(questionId);
+
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
     }
-
-    console.log(question);
-
     const user = await User.findById(userId);
     if (!user) {
       return res.status(403).json({ error: "Invalid User" });
     }
 
     if (user._id == question.createdBy || user.isAdmin) {
-      await Question.findOneAndDelete({
-        _id: questionId,
-        createdBy: userId,
-      });
+      await question.deleteOne();
 
       res.status(200).json({ message: "Question deleted successfully" });
     } else {

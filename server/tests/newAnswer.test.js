@@ -21,7 +21,7 @@ describe("POST /addAnswer", () => {
   });
 
   it("should add a new answer to the question", async () => {
-    const authenticatedUser = { _id: "dummyUser" };
+    const authenticatedUser = { userId: "dummyUser" };
     authenticateToken.verifyToken = jest.fn((req, res, next) => {
       req.user = authenticatedUser;
       next();
@@ -120,7 +120,7 @@ describe("PUT /answers/:answerId/like", () => {
     server.close();
     await mongoose.disconnect();
   });
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -183,7 +183,7 @@ describe("PUT /answers/:answerId/dislike", () => {
     await mongoose.disconnect();
   });
 
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -247,7 +247,7 @@ describe("DELETE /answers/:answerId", () => {
   });
 
   // Mocking the authentication token
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();

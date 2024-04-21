@@ -2,16 +2,13 @@ const Tag = require("../models/tags");
 const Question = require("../models/question");
 
 const addTag = async (tname) => {
-  console.log(tname);
   try {
     let tag = await Tag.findOne({ tagName: tname });
-    console.log(tag);
     if (tag === null) {
       const newTag = new Tag({
         tagName: tname,
       });
       const res = await newTag.save();
-      console.log(res);
       return res._id;
     } else {
       return tag._id;
@@ -53,7 +50,6 @@ const getActiveQuestion = async () => {
       .populate("answerIds")
       .populate("createdBy");
     // Create a mapping of question IDs to their newest answer date
-    console.log(questions);
     const newestAnswerDates = {};
     questions.forEach((question) => {
       question.answerIds.forEach((answer) => {
@@ -66,7 +62,6 @@ const getActiveQuestion = async () => {
       });
     });
 
-    console.log(newestAnswerDates);
     const newestQuestions = await getNewestQuestion(); // Await the result of getNewestQuestion()
 
     // Sort the questions based on newest answer date
@@ -104,18 +99,12 @@ const getQuestionsByOrder = async (order) => {
   } else {
     qlist = await getNewestQuestion();
   }
-  console.log(qlist);
-
   return qlist;
 };
 
 const filterQuestionsBySearch = (qlist, search) => {
-  console.log(qlist);
   let searchTags = parseTags(search);
-  console.log("Search tags :", searchTags.length);
   let searchKeyword = parseKeyword(search);
-  console.log("Search keywords :", searchKeyword.length);
-
   const res = qlist.filter((q) => {
     if (searchKeyword.length === 0 && searchTags.length === 0) {
       return true;
@@ -131,7 +120,6 @@ const filterQuestionsBySearch = (qlist, search) => {
       );
     }
   });
-  console.log(res);
   return res;
 };
 
