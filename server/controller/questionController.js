@@ -10,7 +10,7 @@ const {
 
 const router = express.Router();
 
-router.get("/getQuestionsByUserId/:userId", async (req, res) => {
+const getQuestionsForUser = async (req, res) => {
   const userId = req.params.userId;
   try {
     const questions = await Question.find({ createdBy: userId })
@@ -22,7 +22,7 @@ router.get("/getQuestionsByUserId/:userId", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
-});
+};
 
 // To get Questions by Filter
 const getQuestionsByFilter = async (req, res) => {
@@ -39,28 +39,6 @@ const getQuestionsByFilter = async (req, res) => {
     );
 
     res.json(filteredQuestions);
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-// To get Questions by Id
-const getQuestionById = async (req, res) => {
-  try {
-    const { qid } = req.params;
-
-    if (qid === null) {
-      return res.status(500).json({ error: "Internal server error" });
-    }
-    const question = await Question.findOneAndUpdate(
-      { _id: qid },
-      { $inc: { views: 1 } },
-      { new: true }
-    ).populate("answerIds");
-    if (!question) {
-      return res.status(404).json({ error: "Question not found" });
-    }
-    res.json(question);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -102,33 +80,11 @@ const addQuestion = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-const getAllQuestions = async (req, res) => {
-  try {
-    const questions = await Question.find()
-      .populate("tagIds", "tagName")
-      .populate("createdBy", "username")
-      .lean();
-
-    const formattedQuestions = questions.map((question) => {
-      const tags = question.tagIds.map((tag) => tag.tagName);
-      // eslint-disable-next-line no-unused-vars
-      const { tagIds, ...rest } = question;
-      return { ...rest, tags };
-    });
-
-    res.json(formattedQuestions);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 // Like a question
-router.post("/like/:questionId", authenticateToken, async (req, res) => {
+const likeQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const { userId } = req.body;
+    const userId = req.user._id;
 
     const question = await Question.findById(questionId);
     if (!question) {
@@ -149,13 +105,13 @@ router.post("/like/:questionId", authenticateToken, async (req, res) => {
     console.error("Like question error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+};
 
 // Dislike a question
-router.post("/dislike/:questionId", authenticateToken, async (req, res) => {
+const dislikeQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const { userId } = req.body;
+    const userId = req.user._id;
 
     const question = await Question.findById(questionId);
     if (!question) {
@@ -175,18 +131,20 @@ router.post("/dislike/:questionId", authenticateToken, async (req, res) => {
     console.error("Dislike question error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+};
 
 // Delete a question
-router.delete("/:questionId", authenticateToken, async (req, res) => {
+const deleteQuestion = async (req, res) => {
   try {
     const { questionId } = req.params;
-    const { userId } = req.user;
+    const userId = req.user._id;
 
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
     }
+
+    console.log(question);
 
     const user = await User.findById(userId);
     if (!user) {
@@ -194,7 +152,10 @@ router.delete("/:questionId", authenticateToken, async (req, res) => {
     }
 
     if (user._id == question.createdBy || user.isAdmin) {
-      await question.deleteOne();
+      await Question.findOneAndDelete({
+        _id: questionId,
+        createdBy: userId,
+      });
 
       res.status(200).json({ message: "Question deleted successfully" });
     } else {
@@ -206,11 +167,17 @@ router.delete("/:questionId", authenticateToken, async (req, res) => {
     console.error("Delete question error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+};
 
-router.get("/getQuestion", getQuestionsByFilter);
-router.get("/getQuestionById/:qid", getQuestionById);
+router.post("/like/:questionId", authenticateToken, likeQuestion);
+router.get(
+  "/getQuestionsByUserId/:userId",
+  authenticateToken,
+  getQuestionsForUser
+);
+router.post("/dislike/:questionId", authenticateToken, dislikeQuestion);
+router.delete("/:questionId", authenticateToken, deleteQuestion);
+router.get("/getQuestion", authenticateToken, getQuestionsByFilter);
 router.post("/addQuestion", authenticateToken, addQuestion);
-router.get("/getAllQuestions", authenticateToken, getAllQuestions);
 
 module.exports = router;

@@ -6,8 +6,7 @@ const authenticateToken = require("./authentication_middleware");
 const router = express.Router();
 
 const getAnswersForUser = async (req, res) => {
-  const userId = req.params.userId;
-
+  const userId = req.user._id;
   try {
     const answers = await Answer.find({ createdBy: userId })
       .populate("createdBy")
@@ -52,9 +51,9 @@ const addAnswer = async (req, res) => {
 const getAnswersForQuestion = async (req, res) => {
   try {
     const questionId = req.params.questionId;
-
     // Find the question and populate its answerIds to get all answers
     const question = await Question.findById(questionId).populate("answerIds");
+
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
     }
@@ -63,7 +62,7 @@ const getAnswersForQuestion = async (req, res) => {
     res.status(200).json(answers);
   } catch (error) {
     console.error("Error fetching answers for question:", error);
-    res.status(500).json({ error: "Failed to fetch answers for question" });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -100,7 +99,6 @@ const dislikeAnswer = async (req, res) => {
     if (!answer) {
       return res.status(404).json({ error: "Answer not found" });
     }
-
     const index = answer.likedBy.indexOf(userId);
     if (index > -1) {
       answer.likedBy.splice(index, 1);
@@ -130,7 +128,6 @@ const deleteAnswer = async (req, res) => {
           "Answer not found or you are not authorized to delete this answer",
       });
     }
-
     // Remove answer ID from the question
     await Question.updateOne(
       { _id: answer.questionId },
@@ -153,7 +150,6 @@ router.get(
 );
 router.put("/:answerId/dislike", authenticateToken, dislikeAnswer);
 router.put("/:answerId/like", authenticateToken, likeAnswer);
-
 router.post("/addAnswer", authenticateToken, addAnswer);
 
 module.exports = router;
