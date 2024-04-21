@@ -33,7 +33,14 @@ const NewQuestionPage = ({
       <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div className="bg-white p-8 rounded-lg">
           <h2 className="text-lg font-semibold mb-4">Ask Question</h2>
-          {titleError && <p className="text-red-500 mb-2">{titleError}</p>}
+          {titleError && (
+            <p
+              className="text-red-500 mb-2"
+              data-testid="new-question-modal-title-error"
+            >
+              {titleError}
+            </p>
+          )}
           <input
             type="text"
             placeholder="Title"
@@ -45,7 +52,14 @@ const NewQuestionPage = ({
             className="mb-4 px-4 py-2 border border-gray-300 rounded-md w-full"
             data-testid="new-question-modal-title"
           />
-          {textError && <p className="text-red-500 mb-2">{textError}</p>}
+          {textError && (
+            <p
+              className="text-red-500 mb-2"
+              data-testid="new-question-modal-text-error"
+            >
+              {textError}
+            </p>
+          )}
           <textarea
             placeholder="Question text"
             value={text}
@@ -56,7 +70,14 @@ const NewQuestionPage = ({
             className="mb-4 px-4 py-2 border border-gray-300 rounded-md w-full"
             data-testid="new-question-modal-text"
           ></textarea>
-          {tagsError && <p className="text-red-500 mb-2">{tagsError}</p>}
+          {tagsError && (
+            <p
+              className="text-red-500 mb-2"
+              data-testid="new-question-modal-tags-error"
+            >
+              {tagsError}
+            </p>
+          )}
           <input
             type="text"
             placeholder="Tags (space-separated)"
