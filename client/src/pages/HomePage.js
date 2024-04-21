@@ -33,7 +33,7 @@ const HomePage = () => {
   const [textError, setTextError] = useState("");
   const [tagsError, setTagsError] = useState("");
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     const newQuestionErrors = validateAskQuestion(title, text, newTags);
     const titleError = newQuestionErrors.find((error) =>
       error.includes("title")

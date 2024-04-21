@@ -5,14 +5,48 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useUserStore from "../store/userStore";
 
+const QuestionCard = ({ question }) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px] cursor-pointer"
+      onClick={() => {
+        navigate(`/question/${question._id}`);
+      }}
+    >
+      <h3
+        className="text-lg font-semibold mb-2"
+        data-testid="profile-page-question-title"
+      >
+        {question.title}
+      </h3>
+      <p className="text-gray-600">{question.text}</p>
+    </div>
+  );
+};
+
+const AnswerCard = ({ answer }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px]">
+      <p className="text-gray-600 mb-2" data-testid="profile-page-answer-title">
+        {answer.text}
+      </p>
+    </div>
+  );
+};
+
 const ProfilePage = () => {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const fetchUser = useUserStore((state) => state.fetchUser);
   const navigate = useNavigate();
+  const fetchQuestionsByUserId = useUserStore(
+    (state) => state.fetchQuestionsByUserId
+  );
+  const fetchAnswersByUserId = useUserStore(
+    (state) => state.fetchAnswersByUserId
+  );
   const user = useUserStore((state) => state.user);
   const [userData, setUserData] = useState(null);
-  const fetchQuestionsByUserId = useUserStore((state) => state.fetchQuestionsByUserId);
-  const fetchAnswersByUserId = useUserStore((state) => state.fetchAnswersByUserId);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
 
@@ -74,35 +108,29 @@ const ProfilePage = () => {
               {renderUserData()}
               <div>
                 <h2 className="text-xl font-bold mb-4">Questions</h2>
-                <div className="grid grid-cols-1 gap-4">
-                {questions.length > 0 ? (
+                <div className="flex overflow-x-auto pb-4">
+                  {questions.length > 0 ? (
                     questions.map((question) => (
-                      <div
-                        key={question.id}
-                        className="bg-white rounded-md shadow-md p-4 hover:shadow-lg cursor-pointer transition duration-300"
-                      >
-                        <h3 className="text-lg font-semibold">{question.title}</h3>
-                      </div>
+                      <QuestionCard key={question._id} question={question} />
                     ))
                   ) : (
-                    <p>No questions by this user.</p>
+                    <p data-testid="profile-page-no-questions-text">
+                      No questions by this user.
+                    </p>
                   )}
                 </div>
               </div>
               <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4">Answers</h2>
-                <div className="grid grid-cols-1 gap-4">
-                {answers.length > 0 ? (
+                <h2 className="text-xl font-bold mb-4">Answers</h2>
+                <div className="flex overflow-x-auto pb-4">
+                  {answers.length > 0 ? (
                     answers.map((answer) => (
-                      <div
-                        key={answer.id}
-                        className="bg-white rounded-md shadow-md p-4 hover:shadow-lg cursor-pointer transition duration-300"
-                      >
-                        <h3 className="text-lg font-semibold">{answer.text}</h3>
-                      </div>
+                      <AnswerCard key={answer._id} answer={answer} />
                     ))
                   ) : (
-                    <p>No answers by this user.</p>
+                    <p data-testid="profile-page-no-answers-text">
+                      No answers by this user.
+                    </p>
                   )}
                 </div>
               </div>

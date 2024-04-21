@@ -26,14 +26,13 @@ const QuestionDetailPage = () => {
   const dislikeQuestion = useQuestionStore((state) => state.dislikeQuestion);
   const deleteQuestion = useQuestionStore((state) => state.deleteQuestion);
   const navigate = useNavigate();
-  const formattedDate = getFormattedDate(new Date(question.creationDate));
   const [liked, setLiked] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
   const [text, setText] = useState("");
   const [textError, setTextError] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const textError = validateAskAnswer(text);
     console.log(textError);
     setTextError(textError && textError.trim().length > 0 ? textError : "");
@@ -41,7 +40,7 @@ const QuestionDetailPage = () => {
     if (textError && textError.trim().length > 0) {
       return;
     }
-    postAnswer({ id, text });
+    await postAnswer({ id, text });
     setText("");
     setShowModal(false);
   };
@@ -58,6 +57,8 @@ const QuestionDetailPage = () => {
       <div className="text-center text-2xl font-bold">Question Not Found</div>
     );
   }
+
+  const formattedDate = getFormattedDate(new Date(question.creationDate));
 
   useEffect(() => {
     if (currentUser && question.likedBy.includes(currentUser._id)) {
@@ -142,9 +143,10 @@ const QuestionDetailPage = () => {
               <AnswerList answers={answers} questionId={id} />
             </div>
             <div className="border-t border-gray-300 pt-8">
-            <button
+              <button
                 onClick={() => setShowModal(true)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                data-testid="question-detail-page-add-answer-button"
               >
                 Add Answer
               </button>

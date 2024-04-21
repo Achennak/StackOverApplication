@@ -25,7 +25,7 @@ const NewAnswerPage = ({
           {textError && (
             <p
               className="text-red-500 mb-2"
-              data-testid="new-question-modal-text-error"
+              data-testid="new-answer-modal-text-error"
             >
               {textError}
             </p>
@@ -38,7 +38,7 @@ const NewAnswerPage = ({
               setTextError("");
             }}
             className="mb-4 px-4 py-2 border border-gray-300 rounded-md w-full"
-            data-testid="new-question-modal-text"
+            data-testid="new-answer-modal-text"
           ></textarea>
           <div className="flex justify-end">
             <button
@@ -53,7 +53,7 @@ const NewAnswerPage = ({
             <button
               onClick={handleSubmit}
               className="px-4 py-2 bg-blue-500 text-white rounded-md"
-              data-testid="new-question-modal-submit-button"
+              data-testid="new-answer-modal-submit-button"
             >
               Submit
             </button>
