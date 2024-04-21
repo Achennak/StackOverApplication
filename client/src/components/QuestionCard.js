@@ -36,11 +36,11 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
 
   const formattedDate = getFormattedDate(new Date(creationDate));
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (liked) {
-      dislikeQuestion(_id, currentUser._id);
+      await dislikeQuestion(_id, currentUser._id);
     } else {
-      likeQuestion(_id, currentUser._id);
+      await likeQuestion(_id, currentUser._id);
     }
     setLiked(!liked);
   };
@@ -79,6 +79,7 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
             key={tagId._id}
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 cursor-pointer"
             onClick={() => handleTagClick(tagId.tagName)}
+            data-testid={`question-card-tag-${tagId.tagName}`}
           >
             {tagId.tagName}
           </span>
@@ -94,11 +95,19 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
           onClick={handleLike}
         >
           {liked ? (
-            <FaHeart className="text-red-500 mr-2" />
+            <FaHeart
+              className="text-red-500 mr-2"
+              data-testid="question-card-dislike-button"
+            />
           ) : (
-            <FaRegHeart className="text-gray-500 mr-2" />
+            <FaRegHeart
+              className="text-gray-500 mr-2"
+              data-testid="question-card-like-button"
+            />
           )}
-          <span>{likedBy.length}</span>
+          <span data-testid="question-card-number-of-likes">
+            {likedBy.length}
+          </span>
         </div>
         <div className="ml-auto">
           <span className="text-gray-500">{answerIds.length} Answers</span>
