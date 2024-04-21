@@ -36,8 +36,8 @@ describe("POST /addAnswer", () => {
 
     // Mocking the request body
     const mockReqBody = {
-      qid: "dummyQuestionId",
-      ans: mockAnswer,
+      id: "dummyQuestionId",
+      text: "This is a test answer",
     };
 
     // Mock the create method of the Answer model
@@ -72,10 +72,8 @@ describe("POST /addAnswer", () => {
   it("should return error when user is not logged in", async () => {
     // Mock request body
     const mockReqBody = {
-      qid: "dummyQuestionId",
-      ans: {
-        text: "This is a test answer",
-      },
+      id: "dummyQuestionId",
+      text: "This is a test answer",
     };
 
     // Making the request without setting the Authorization header
@@ -91,10 +89,8 @@ describe("POST /addAnswer", () => {
   it("should return 403 when user provides an invalid token", async () => {
     // Mock request body
     const mockReqBody = {
-      qid: "dummyQuestionId",
-      ans: {
-        text: "This is a test answer",
-      },
+      id: "dummyQuestionId",
+      text: "This is a test answer",
     };
 
     const invalidToken = "invalid_token";

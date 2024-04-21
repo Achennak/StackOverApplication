@@ -443,22 +443,14 @@ describe("DELETE /questions/:questionId", () => {
 
   const token = jwt.sign(authenticatedUser, "random_key");
   it("should delete a question", async () => {
-    const userId = "65e9b58910afe6e94fc6e6dcb";
-    const mockUser = {
-      _id: userId,
-      userName: "testuser",
-      email: "test@example.com",
-      password: "hashedPassword",
-      isAdmin: false,
-      save: jest.fn(),
-    };
+    const userId = new mongoose.Types.ObjectId();
 
     const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
     const mockQuestion = {
       _id: mockQuestionId,
       title: "Title",
       text: "Text",
-      createdBy: "65e9b58910afe6e94fc6e6dcb",
+      createdBy: userId,
       save: jest.fn(),
     };
 
@@ -467,7 +459,7 @@ describe("DELETE /questions/:questionId", () => {
     Question.findById.mockResolvedValueOnce(mockQuestion);
 
     User.findById = jest.fn().mockResolvedValueOnce({
-      _id: "65e9b58910afe6e94fc6e6dcb",
+      _id: userId,
       userName: "testuser",
       email: "test@example.com",
       password: "hashedPassword",
@@ -486,6 +478,7 @@ describe("DELETE /questions/:questionId", () => {
   });
 
   it("should return 403 if user is not the creator and not admin", async () => {
+    const userId = new mongoose.Types.ObjectId();
     const mockQuestionId = "65e9b58910afe6e94fc6e6dc";
     const mockQuestion = {
       _id: mockQuestionId,
@@ -495,7 +488,7 @@ describe("DELETE /questions/:questionId", () => {
       save: jest.fn(),
     };
     User.findById = jest.fn().mockResolvedValueOnce({
-      _id: "65e9b58910afe6e94fc6e6dcb",
+      _id: userId,
       userName: "testuser",
       email: "test@example.com",
       password: "hashedPassword",

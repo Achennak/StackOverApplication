@@ -1,25 +1,6 @@
 import { create } from "zustand";
 import axiosInstance from "../api/axiosInstance";
 
-// const dummyAnswers = [
-//   {
-//     _id: "661e96405b22f6ccab8bb65c",
-//     text: "Storing content as BLOBs in databases.",
-//     createdBy: "661e963f5b22f6ccab8bb64c",
-//     likedBy: [],
-//     creationDate: "2023-02-19T23:20:59.000Z",
-//     __v: 0,
-//   },
-//   {
-//     _id: "661e96405b22f6ccab8bb65e",
-//     text: "Using GridFS to chunk and store content.",
-//     createdBy: "661e963f5b22f6ccab8bb64e",
-//     likedBy: [],
-//     creationDate: "2023-02-22T22:19:00.000Z",
-//     __v: 0,
-//   },
-// ];
-
 const useAnswerStore = create((set, get) => ({
   answers: [],
   fetchAnswers: async (qid) => {
@@ -32,9 +13,9 @@ const useAnswerStore = create((set, get) => ({
       console.error("Error fetching answers:", error);
     }
   },
-  postAnswer: async (answer) => {
+  postAnswer: async (answerData) => {
     try {
-      const response = await axiosInstance.post("/answers/addAnswer", answer);
+      const response = await axiosInstance.post("/answers/addAnswer", answerData);
       set((state) => ({
         answers: [...state.answers, response.data],
       }));

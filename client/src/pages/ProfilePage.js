@@ -11,6 +11,10 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
   const [userData, setUserData] = useState(null);
+  const fetchQuestionsByUserId = useUserStore((state) => state.fetchQuestionsByUserId);
+  const fetchAnswersByUserId = useUserStore((state) => state.fetchAnswersByUserId);
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -20,9 +24,25 @@ const ProfilePage = () => {
     }
   }, [isAuthenticated, navigate, fetchUser]);
 
+  const fetchQuestions = async () => {
+    if (user) {
+      const questionsData = await fetchQuestionsByUserId(user._id);
+      setQuestions(questionsData);
+    }
+  };
+
+  const fetchAnswers = async () => {
+    if (user) {
+      const answersData = await fetchAnswersByUserId(user._id);
+      setAnswers(answersData);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setUserData(user);
+      fetchQuestions();
+      fetchAnswers();
     }
   }, [user]);
 
@@ -54,11 +74,37 @@ const ProfilePage = () => {
               {renderUserData()}
               <div>
                 <h2 className="text-xl font-bold mb-4">Questions</h2>
-                {/* Add horizontally scrollable questions here */}
+                <div className="grid grid-cols-1 gap-4">
+                {questions.length > 0 ? (
+                    questions.map((question) => (
+                      <div
+                        key={question.id}
+                        className="bg-white rounded-md shadow-md p-4 hover:shadow-lg cursor-pointer transition duration-300"
+                      >
+                        <h3 className="text-lg font-semibold">{question.title}</h3>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No questions by this user.</p>
+                  )}
+                </div>
               </div>
               <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4">Answers</h2>
-                {/* Add horizontally scrollable answers here */}
+              <h2 className="text-xl font-bold mb-4">Answers</h2>
+                <div className="grid grid-cols-1 gap-4">
+                {answers.length > 0 ? (
+                    answers.map((answer) => (
+                      <div
+                        key={answer.id}
+                        className="bg-white rounded-md shadow-md p-4 hover:shadow-lg cursor-pointer transition duration-300"
+                      >
+                        <h3 className="text-lg font-semibold">{answer.text}</h3>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No answers by this user.</p>
+                  )}
+                </div>
               </div>
             </div>
           )}
