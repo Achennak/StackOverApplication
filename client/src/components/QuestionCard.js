@@ -34,7 +34,6 @@ const QuestionCard = ({ question, handleTagClick, currentUser }) => {
     }
   }, [currentUser, question.likedBy]);
 
-  // TODO: Use the util function instead
   const formattedDate = getFormattedDate(new Date(creationDate));
 
   const handleLike = () => {
