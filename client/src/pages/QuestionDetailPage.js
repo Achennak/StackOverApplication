@@ -9,6 +9,8 @@ import { FaTrashAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { getFormattedDate } from "../utils";
 import TopBar from "../components/topbar";
 import Sidebar from "../components/sidebar";
+import NewAnswerPage from "./NewAnswerPage";
+import { validateAskAnswer } from "../utils";
 
 const QuestionDetailPage = () => {
   const { id } = useParams();
@@ -16,6 +18,7 @@ const QuestionDetailPage = () => {
     state.questions.find((question) => question._id === id)
   );
   const fetchAnswers = useAnswerStore((state) => state.fetchAnswers);
+  const postAnswer = useAnswerStore((state) => state.postAnswer);
   const answers = useAnswerStore((state) => state.answers);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const currentUser = useUserStore((state) => state.user);
@@ -25,6 +28,23 @@ const QuestionDetailPage = () => {
   const navigate = useNavigate();
   const formattedDate = getFormattedDate(new Date(question.creationDate));
   const [liked, setLiked] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [text, setText] = useState("");
+  const [textError, setTextError] = useState("");
+
+  const handleSubmit = () => {
+    const textError = validateAskAnswer(text);
+    console.log(textError);
+    setTextError(textError && textError.trim().length > 0 ? textError : "");
+
+    if (textError && textError.trim().length > 0) {
+      return;
+    }
+    postAnswer({ id, text });
+    setText("");
+    setShowModal(false);
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -122,12 +142,27 @@ const QuestionDetailPage = () => {
               <AnswerList answers={answers} questionId={id} />
             </div>
             <div className="border-t border-gray-300 pt-8">
-              <h3 className="text-xl font-bold mb-4">Your Answer</h3>
-              {/* TODO: Add a form to submit a new answer */}
+            <button
+                onClick={() => setShowModal(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              >
+                Add Answer
+              </button>
             </div>
           </div>
         </div>
       </div>
+      {showModal && (
+        <NewAnswerPage
+          showModal={showModal}
+          setShowModal={setShowModal}
+          handleSubmit={handleSubmit}
+          text={text}
+          setText={setText}
+          textError={textError}
+          setTextError={setTextError}
+        />
+      )}
     </div>
   );
 };
