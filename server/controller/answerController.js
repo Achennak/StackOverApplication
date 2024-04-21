@@ -6,7 +6,7 @@ const authenticateToken = require("./authentication_middleware");
 const router = express.Router();
 
 const getAnswersForUser = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.params.userId;
   try {
     const answers = await Answer.find({ createdBy: userId })
       .populate("createdBy")
@@ -23,7 +23,7 @@ const addAnswer = async (req, res) => {
   try {
     const { qid, ans } = req.body;
 
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     // Create a new answer
     const newAnswer = await Answer.create({
@@ -70,7 +70,7 @@ const getAnswersForQuestion = async (req, res) => {
 const likeAnswer = async (req, res) => {
   try {
     const answerId = req.params.answerId;
-    const userId = req.user._id;
+    const userId = req.user.userId;
     const answer = await Answer.findById(answerId);
 
     if (!answer) {
@@ -93,7 +93,7 @@ const likeAnswer = async (req, res) => {
 const dislikeAnswer = async (req, res) => {
   try {
     const answerId = req.params.answerId;
-    const userId = req.user._id;
+    const userId  = req.user.userId;
     const answer = await Answer.findById(answerId);
 
     if (!answer) {
@@ -116,7 +116,7 @@ const dislikeAnswer = async (req, res) => {
 const deleteAnswer = async (req, res) => {
   try {
     const answerId = req.params.answerId;
-    const userId = req.user._id;
+    const userId = req.user.userId;
     const answer = await Answer.findOneAndDelete({
       _id: answerId,
       createdBy: userId,

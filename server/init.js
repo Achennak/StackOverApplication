@@ -95,8 +95,6 @@ const populate = async () => {
 
   //create users
   let user1 = await createUser("user1", "user1@example.com", "password123");
-  console.log(user1);
-
   let user2 = await createUser("user2", "user2@example.com", "password456");
   let user3 = await createUser("user3", "user3@example.com", "password789");
   let user4 = await createUser("user4", "user4@example.com", "password2708");

@@ -253,7 +253,6 @@ describe('question util module', () => {
         const result = await getQuestionsByOrder('newest');
         
         expect(result.length).toEqual(3);
-        console.log(result[0]);
         expect(result[0]._id.toString()).toEqual('65e9b716ff0e892116b2de04');
         expect(result[1]._id.toString()).toEqual('65e9b716ff0e892116b2de01');
         expect(result[2]._id.toString()).toEqual('65e9b716ff0e892116b2de05');

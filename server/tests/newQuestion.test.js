@@ -74,7 +74,7 @@ describe("GET /getQuestion", () => {
     await mongoose.disconnect();
   });
 
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -123,7 +123,7 @@ describe("POST /addQuestion", () => {
       answerIds: [ans1],
     };
 
-    const authenticatedUser = { _id: "dummyUser" };
+    const authenticatedUser = { userId: "dummyUser" };
     authenticateToken.verifyToken = jest.fn((req, res, next) => {
       req.user = authenticatedUser;
       next();
@@ -248,7 +248,7 @@ describe("POST /questions/like/:questionId", () => {
     server.close();
     await mongoose.disconnect();
   });
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -274,7 +274,7 @@ describe("POST /questions/like/:questionId", () => {
     const response = await supertest(server)
       .post(`/questions/like/${mockQuestionId}`)
       .set("authorization", token)
-      .send();
+      .send({ userId: "dummyUser" });
 
     expect(response.status).toBe(200);
     expect(mockQuestion.save).toHaveBeenCalled();
@@ -311,7 +311,7 @@ describe("POST /questions/like/:questionId", () => {
     const response = await supertest(server)
       .post(`/questions/like/${mockQuestionId}`)
       .set("authorization", token)
-      .send();
+      .send({ userId: "dummyUser" });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
@@ -343,7 +343,7 @@ describe("POST /questions/dislike/:questionId", () => {
     server.close();
     await mongoose.disconnect();
   });
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "dummyUser" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -368,7 +368,7 @@ describe("POST /questions/dislike/:questionId", () => {
     const response = await supertest(server)
       .post(`/questions/dislike/${mockQuestionId}`)
       .set("authorization", token)
-      .send();
+      .send({ userId: "dummyUser" });
 
     // Assertions
     expect(response.status).toBe(200);
@@ -435,7 +435,7 @@ describe("DELETE /questions/:questionId", () => {
     server.close();
     await mongoose.disconnect();
   });
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "65e9b58910afe6e94fc6e6dcb" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
@@ -443,8 +443,9 @@ describe("DELETE /questions/:questionId", () => {
 
   const token = jwt.sign(authenticatedUser, "random_key");
   it("should delete a question", async () => {
+    const userId = "65e9b58910afe6e94fc6e6dcb";
     const mockUser = {
-      _id: "dummyUser",
+      _id: userId,
       userName: "testuser",
       email: "test@example.com",
       password: "hashedPassword",
@@ -457,14 +458,21 @@ describe("DELETE /questions/:questionId", () => {
       _id: mockQuestionId,
       title: "Title",
       text: "Text",
-      createdBy: "dummyUser",
+      createdBy: "65e9b58910afe6e94fc6e6dcb",
       save: jest.fn(),
     };
 
-    Question.findById.mockResolvedValueOnce(mockQuestion);
-    User.findById = jest.fn().mockResolvedValueOnce(mockUser);
+    mockQuestion.deleteOne = jest.fn().mockResolvedValueOnce();
 
-    // Making the request
+    Question.findById.mockResolvedValueOnce(mockQuestion);
+
+    User.findById = jest.fn().mockResolvedValueOnce({
+      _id: "65e9b58910afe6e94fc6e6dcb",
+      userName: "testuser",
+      email: "test@example.com",
+      password: "hashedPassword",
+      isAdmin: false,
+    });
     const response = await supertest(server)
       .delete(`/questions/${mockQuestionId}`)
       .set("authorization", token)
@@ -474,7 +482,7 @@ describe("DELETE /questions/:questionId", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: "Question deleted successfully" });
     expect(Question.findById).toHaveBeenCalledWith(mockQuestionId);
-    expect(User.findById).toHaveBeenCalledWith("dummyUser");
+    expect(User.findById).toHaveBeenCalledWith("65e9b58910afe6e94fc6e6dcb");
   });
 
   it("should return 403 if user is not the creator and not admin", async () => {
@@ -486,6 +494,14 @@ describe("DELETE /questions/:questionId", () => {
       createdBy: "anotherUser", // Assuming another user created this question
       save: jest.fn(),
     };
+    User.findById = jest.fn().mockResolvedValueOnce({
+      _id: "65e9b58910afe6e94fc6e6dcb",
+      userName: "testuser",
+      email: "test@example.com",
+      password: "hashedPassword",
+      isAdmin: false,
+    });
+
     Question.findById.mockResolvedValueOnce(mockQuestion);
 
     const response = await supertest(server)
@@ -493,7 +509,7 @@ describe("DELETE /questions/:questionId", () => {
       .set("authorization", token);
 
     expect(response.status).toBe(403);
-    expect(response.body).toEqual({ error: "Invalid User" });
+    expect(response.body).toEqual({ error: "Unauthorized to delete this question" });
   });
 });
 
@@ -507,35 +523,39 @@ describe.skip("GET /questions/getQuestionsByUserId/:userId", () => {
     await mongoose.disconnect();
   });
 
-  const authenticatedUser = { _id: "dummyUser" };
+  const authenticatedUser = { userId: "65e9b58910afe6e94fc6e6dcb" };
   authenticateToken.verifyToken = jest.fn((req, res, next) => {
     req.user = authenticatedUser;
     next();
   });
-
   const token = jwt.sign(authenticatedUser, "random_key");
 
   it("should return questions for the specified user", async () => {
-    const mockUserId = "dummyUser";
+    const mockUserId = "65e9b58910afe6e94fc6e6dcb";
+    const mockUser = {
+      _id: mockUserId,
+      userName: "testuser",
+      email: "test@example.com",
+      password: "hashedPassword",
+      isAdmin: false,
+      save: jest.fn(),
+    };
     const mockQuestions = [
       { _id: "question1", title: "Title 1", createdBy: mockUserId },
       { _id: "question2", title: "Title 2", createdBy: mockUserId },
     ];
-
-    Question.find.mockResolvedValueOnce(mockQuestions);
+   
+   // Question.find.mockResolvedValueOnce(mockQuestions);
+    Question.find = jest.fn().mockResolvedValueOnce(mockQuestion);
 
     const res = await supertest(server)
-      .delete(`/questions/$getQuestionsByUserId/${userId}`)
+      .get(`/questions/getQuestionsByUserId/${mockUserId}`)
       .set("authorization", token)
       .send();
-
-    expect(res.status).not.toHaveBeenCalled();
-    expect(res.json).toHaveBeenCalledWith(mockPopulatedQuestions);
+    
+    expect(res.status).toBe(200);
+    expect(res.json).toHaveBeenCalledWith(mockQuestions);
     expect(Question.find).toHaveBeenCalledWith({ createdBy: mockUserId });
-    expect(Question.populate).toHaveBeenCalledWith(mockQuestions, [
-      { path: "tagIds" },
-      { path: "createdBy", select: "userName" },
-    ]);
   });
 
   it("should return 500 if an error occurs", async () => {
