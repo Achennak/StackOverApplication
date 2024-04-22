@@ -91,7 +91,12 @@ const NewQuestionPage = ({
           />
           <div className="flex justify-end">
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false);
+                setTitleError("");
+                setTextError("");
+                setTagsError("");
+              }}
               className="mr-4 px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
             >
               Cancel

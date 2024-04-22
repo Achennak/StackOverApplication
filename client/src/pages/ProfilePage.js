@@ -5,12 +5,50 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useUserStore from "../store/userStore";
 
+const QuestionCard = ({ question }) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px] cursor-pointer"
+      onClick={() => {
+        navigate(`/question/${question._id}`);
+      }}
+    >
+      <h3
+        className="text-lg font-semibold mb-2"
+        data-testid="profile-page-question-title"
+      >
+        {question.title}
+      </h3>
+      <p className="text-gray-600">{question.text}</p>
+    </div>
+  );
+};
+
+const AnswerCard = ({ answer }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-4 mr-4 flex flex-col min-w-[300px] max-w-[400px]">
+      <p className="text-gray-600 mb-2" data-testid="profile-page-answer-title">
+        {answer.text}
+      </p>
+    </div>
+  );
+};
+
 const ProfilePage = () => {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const fetchUser = useUserStore((state) => state.fetchUser);
   const navigate = useNavigate();
+  const fetchQuestionsByUserId = useUserStore(
+    (state) => state.fetchQuestionsByUserId
+  );
+  const fetchAnswersByUserId = useUserStore(
+    (state) => state.fetchAnswersByUserId
+  );
   const user = useUserStore((state) => state.user);
   const [userData, setUserData] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -20,9 +58,25 @@ const ProfilePage = () => {
     }
   }, [isAuthenticated, navigate, fetchUser]);
 
+  const fetchQuestions = async () => {
+    if (user) {
+      const questionsData = await fetchQuestionsByUserId(user._id);
+      setQuestions(questionsData);
+    }
+  };
+
+  const fetchAnswers = async () => {
+    if (user) {
+      const answersData = await fetchAnswersByUserId(user._id);
+      setAnswers(answersData);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setUserData(user);
+      fetchQuestions();
+      fetchAnswers();
     }
   }, [user]);
 
@@ -54,11 +108,31 @@ const ProfilePage = () => {
               {renderUserData()}
               <div>
                 <h2 className="text-xl font-bold mb-4">Questions</h2>
-                {/* Add horizontally scrollable questions here */}
+                <div className="flex overflow-x-auto pb-4">
+                  {questions.length > 0 ? (
+                    questions.map((question) => (
+                      <QuestionCard key={question._id} question={question} />
+                    ))
+                  ) : (
+                    <p data-testid="profile-page-no-questions-text">
+                      No questions by this user.
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="mt-8">
                 <h2 className="text-xl font-bold mb-4">Answers</h2>
-                {/* Add horizontally scrollable answers here */}
+                <div className="flex overflow-x-auto pb-4">
+                  {answers.length > 0 ? (
+                    answers.map((answer) => (
+                      <AnswerCard key={answer._id} answer={answer} />
+                    ))
+                  ) : (
+                    <p data-testid="profile-page-no-answers-text">
+                      No answers by this user.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}

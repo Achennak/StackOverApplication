@@ -12,7 +12,6 @@ const router = express.Router();
 
 const getQuestionsForUser = async (req, res) => {
   const userId = req.params.userId;
-  console.log(userId);
   try {
     const questions = await Question.find({ createdBy: userId })
       .populate("createdBy")
@@ -146,7 +145,7 @@ const deleteQuestion = async (req, res) => {
       return res.status(403).json({ error: "Invalid User" });
     }
 
-    if (user._id == question.createdBy || user.isAdmin) {
+    if (user._id.equals(question.createdBy) || user.isAdmin) {
       await question.deleteOne();
 
       res.status(200).json({ message: "Question deleted successfully" });

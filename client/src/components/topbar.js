@@ -41,6 +41,7 @@ const TopBar = () => {
                       to="/profile"
                       className="block py-2 px-4 hover:bg-gray-100"
                       onClick={() => setIsDropdownOpen(false)}
+                      data-testid="topbar-visit-profile-button"
                     >
                       Visit Profile
                     </Link>

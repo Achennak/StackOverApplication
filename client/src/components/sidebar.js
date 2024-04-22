@@ -12,6 +12,7 @@ const Sidebar = () => {
             className={`block py-2 px-4  ${
               location.pathname === "/" ? "bg-blue-500 text-white" : ""
             }`}
+            data-testid="sidebar-navigate-to-home"
           >
             Questions
           </Link>
@@ -22,6 +23,7 @@ const Sidebar = () => {
             className={`block py-2 px-4  ${
               location.pathname === "/tags" ? "bg-blue-500 text-white" : ""
             }`}
+            data-testid="sidebar-navigate-to-tags"
           >
             Tags
           </Link>

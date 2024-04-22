@@ -27,18 +27,7 @@ jobs:
       - name: Run Cypress tests
         run: |
           cd client
-          npm run test:cypress
-
-      - name: Generate Cypress coverage report
-        run: |
-          cd client
-          npm run test:cypress --coverage
-
-      - name: Upload Cypress coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-coverage
-          path: client/coverage
+          npm run test:cypress -- --e2e --browser chrome --headless
 
       - name: Kill server
         working-directory: server
