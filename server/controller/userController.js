@@ -55,8 +55,6 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    console.log(`LOGIN: email is ${email} and password is: ${password}`);
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
